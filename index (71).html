@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="sk"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SLOBODA – experiment 17/11 · Zavretá škola</title>
+<meta name="description" content="Bezplatná interaktívna aplikácia k 17. novembru: čo je sloboda a demokracia, aké je žiť bez nich a ako sa dajú stratiť. Pre 8. – 9. ročník ZŠ a SŠ.">
+<meta name="author" content="Miroslav Sopko">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter+Tight:wght@400;600;800&family=Courier+Prime:wght@400;700&family=JetBrains+Mono:wght@400;700;800&family=VT323&display=swap" rel="stylesheet">
+<style>/* ===== SLOBODA – experiment 17/11 · v2 (tmavý, kinetický) ===== */
+:root{
+  --paper:#09090b; --paper2:#131317; --card:#121216; --card2:#1a1a20;
+  --ink:#f2efe8; --ink2:#c9c5bb; --muted:#8a867d;
+  --line:rgba(255,255,255,.13); --line2:rgba(255,255,255,.28);
+  --red:#ff3b2f; --blue:#4d6bff; --yellow:#ffe14a; --lime:#d4ff3a;
+  --ok:#3ef28b; --bad:#ff4d6a;
+  --acc:var(--lime); --acc2:var(--red); --onacc:#0b0b0d;
+  --r:22px;
+  --display:'Anton','Impact',sans-serif;
+  --body:'Inter Tight',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --type:'Courier Prime','Courier New',monospace;
+  --vt:'VT323',var(--mono);
+}
+body.volic{--acc:#ff5a36;--acc2:var(--lime)}
+body.sudca{--acc:#a08cff;--acc2:var(--yellow)}
+*{box-sizing:border-box}
+html,body{margin:0;overflow-x:hidden}
+body{font-family:var(--body);background:var(--paper);color:var(--ink);font-size:17px;line-height:1.5;min-height:100vh}
+::selection{background:var(--acc);color:var(--onacc)}
+/* zrno + žiara */
+body:before{content:"";position:fixed;inset:-50%;pointer-events:none;z-index:2;opacity:.09;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain .9s steps(6) infinite}
+@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-4%,3%)}40%{transform:translate(3%,-5%)}60%{transform:translate(-6%,-2%)}80%{transform:translate(5%,4%)}100%{transform:translate(0,0)}}
+body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(60vw 50vh at 85% -10%,color-mix(in srgb,var(--acc) 16%,transparent),transparent 70%),radial-gradient(50vw 40vh at -10% 110%,color-mix(in srgb,var(--acc2) 12%,transparent),transparent 70%)}
+#app{position:relative;z-index:1;transition:filter 1.2s ease}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:var(--acc)}
+.wrap{max-width:1000px;margin:0 auto;padding:0 18px 60px}
+.mono{font-family:var(--mono)}
+.hidden{display:none!important}
+main.enter{animation:enter .55s cubic-bezier(.2,.8,.2,1)}
+@keyframes enter{from{opacity:0;transform:translateY(18px);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+
+/* hlavička */
+header.top{position:sticky;top:0;z-index:30;backdrop-filter:blur(14px) saturate(1.4);background:color-mix(in srgb,var(--paper) 70%,transparent);border-bottom:1px solid var(--line)}
+header.top .in{max-width:1000px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:10px 18px}
+.logo{display:flex;align-items:center;gap:10px;background:none;border:0;padding:0;text-align:left;color:var(--ink)}
+.logo svg{color:var(--acc)}
+.logo b{font-family:var(--display);font-weight:400;letter-spacing:.14em;font-size:20px;white-space:nowrap;line-height:1}
+.logo small{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.18em}
+.live{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--red);margin-right:6px;box-shadow:0 0 10px var(--red);animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.25}}
+.sp{flex:1}
+.ibtn{width:44px;height:44px;border-radius:50%;border:1px solid var(--line2);background:var(--card);display:grid;place-items:center;color:var(--ink);transition:border-color .2s,transform .2s}
+.ibtn:hover{border-color:var(--acc);transform:scale(1.06)}
+.ibtn svg{width:20px;height:20px}
+
+/* HERO */
+.hero{position:relative;margin:0 0 0 calc(50% - 50vw);width:100vw;min-height:min(86vh,720px);display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;border-bottom:1px solid var(--line)}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(9,9,11,.2) 0%,rgba(9,9,11,.1) 40%,rgba(9,9,11,.92) 88%,var(--paper));pointer-events:none}
+.hero .txt{position:relative;padding:0 22px 26px;max-width:1000px;width:100%;margin:0 auto;pointer-events:none}
+.hero .txt .btn,.hero .txt .chip{pointer-events:auto}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.28em;color:var(--acc);text-transform:uppercase;font-weight:700}
+.mega{font-family:var(--display);font-weight:400;font-size:clamp(88px,24vw,250px);line-height:.82;letter-spacing:-.01em;margin:.12em 0 .08em;text-transform:uppercase;color:var(--ink)}
+.glitch{position:relative;display:inline-block}
+.glitch:before,.glitch:after{content:attr(data-t);position:absolute;inset:0;pointer-events:none}
+.glitch:before{color:var(--acc2);mix-blend-mode:screen;animation:gl1 3.2s infinite steps(1)}
+.glitch:after{color:var(--acc);mix-blend-mode:screen;animation:gl2 3.2s infinite steps(1)}
+@keyframes gl1{0%,88%,100%{clip-path:inset(0 0 100% 0);transform:none}89%{clip-path:inset(12% 0 60% 0);transform:translate(-6px,0)}91%{clip-path:inset(55% 0 20% 0);transform:translate(5px,0)}93%{clip-path:inset(30% 0 45% 0);transform:translate(-3px,0)}95%{clip-path:inset(0 0 100% 0)}}
+@keyframes gl2{0%,88%,100%{clip-path:inset(0 0 100% 0);transform:none}90%{clip-path:inset(65% 0 8% 0);transform:translate(6px,0)}92%{clip-path:inset(20% 0 62% 0);transform:translate(-5px,0)}94%{clip-path:inset(0 0 100% 0)}}
+.rot{font-family:var(--body);font-weight:800;font-size:clamp(22px,4.6vw,40px);line-height:1.1;letter-spacing:-.02em;min-height:1.2em}
+.rot .w{color:var(--acc)}
+.rot .cur{display:inline-block;width:.5em;height:.9em;background:var(--acc);vertical-align:-.1em;margin-left:3px;animation:blink .8s infinite}
+.lead{font-size:18px;color:var(--ink2);max-width:52ch}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chip{font-family:var(--mono);font-size:12px;border:1px solid var(--line2);border-radius:99px;padding:6px 12px;background:rgba(0,0,0,.35);backdrop-filter:blur(6px)}
+.marquee{position:relative;overflow:hidden;background:var(--acc);color:var(--onacc);margin:0 0 0 calc(50% - 50vw);width:100vw;transform:rotate(-1.2deg);box-shadow:0 0 40px -10px var(--acc)}
+.marquee div{display:flex;width:max-content;animation:mq 28s linear infinite;font-family:var(--display);font-size:26px;letter-spacing:.04em;padding:8px 0;white-space:nowrap}
+.marquee span{padding:0 18px}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+.sec{margin-top:46px}
+.sec-h{display:flex;align-items:baseline;gap:14px;margin-bottom:16px}
+.sec-h .n{font-family:var(--mono);font-size:13px;color:var(--acc)}
+.sec-h h2{margin:0}
+h1,h2{font-family:var(--display);font-weight:400;text-transform:uppercase;letter-spacing:.01em}
+h2{font-size:clamp(30px,6vw,48px);line-height:.95;margin:.2em 0 .4em}
+h3{font-size:20px;margin:.2em 0 .5em;font-weight:800;letter-spacing:-.01em}
+[data-r]{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
+[data-r].in{opacity:1;transform:none}
+
+/* úrovne – karty spisu */
+.levels{display:grid;gap:12px;grid-template-columns:1fr}
+@media(min-width:680px){.levels{grid-template-columns:repeat(3,1fr)}}
+.lvl{position:relative;display:flex;gap:14px;align-items:center;text-align:left;border:1px solid var(--line);border-radius:var(--r);background:var(--card);padding:14px;min-height:100px;overflow:hidden;transition:border-color .2s,transform .2s}
+.lvl:hover{border-color:var(--line2)}
+.lvl.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc),0 0 40px -10px var(--acc)}
+.lvl.on:after{content:"VYBRANÉ";position:absolute;right:12px;top:10px;font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--onacc);background:var(--acc);padding:2px 7px;border-radius:99px}
+.lvl .av{width:72px;height:72px;flex:none;border-radius:14px;overflow:hidden;border:1px solid var(--line2)}
+.lvl b{display:block;font-family:var(--display);font-weight:400;font-size:26px;text-transform:uppercase;line-height:1}
+.lvl small{color:var(--muted);font-size:13px;display:block;line-height:1.3;margin-top:3px}
+
+/* spisy – epizódy */
+.files{display:grid;gap:12px}
+.file{--mx:50%;--my:50%;--rx:0deg;--ry:0deg;position:relative;display:grid;grid-template-columns:auto 1fr;gap:4px 18px;align-items:center;text-align:left;border:1px solid var(--line);border-radius:var(--r);background:var(--card);padding:18px 20px;min-height:120px;overflow:hidden;transform:perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));transition:border-color .25s,transform .15s}
+.file:before{content:"";position:absolute;inset:0;background:radial-gradient(320px circle at var(--mx) var(--my),color-mix(in srgb,var(--acc) 22%,transparent),transparent 60%);opacity:0;transition:opacity .3s;pointer-events:none}
+.file:hover{border-color:color-mix(in srgb,var(--acc) 60%,transparent)}
+.file:hover:before{opacity:1}
+.file .no{grid-row:span 2;font-family:var(--display);font-size:clamp(64px,13vw,100px);line-height:.85;color:transparent;-webkit-text-stroke:1.5px color-mix(in srgb,var(--ink) 55%,transparent);transition:color .3s,-webkit-text-stroke-color .3s}
+.file:hover .no{color:var(--acc);-webkit-text-stroke-color:var(--acc)}
+.file b{display:block;font-family:var(--display);font-weight:400;font-size:clamp(24px,4.6vw,34px);line-height:1;text-transform:uppercase;align-self:end}
+.file small{color:var(--muted);display:block;font-size:15px;line-height:1.35;align-self:start}
+.file.special{background:linear-gradient(135deg,#1b0c0c,#0d0d10 60%);border-color:color-mix(in srgb,var(--red) 50%,transparent)}
+.file.special .no{-webkit-text-stroke-color:var(--red)}
+.file.special:hover .no{color:var(--red)}
+.file.special:after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 2px,transparent 2px 4px);animation:scan 6s linear infinite}
+@keyframes scan{to{background-position:0 120px}}
+.file .tag{position:absolute;right:14px;top:14px;font-family:var(--mono);font-size:11px;padding:4px 10px;border-radius:99px;background:var(--red);color:#fff;letter-spacing:.14em;z-index:1}
+.file .tag .live{background:#fff;box-shadow:none;width:6px;height:6px}
+.stamp-done{position:absolute;right:16px;bottom:14px;transform:rotate(-8deg);border:2px solid var(--ok);color:var(--ok);font-family:var(--mono);font-weight:800;padding:2px 10px;border-radius:6px;letter-spacing:.15em;font-size:12px;box-shadow:0 0 18px -4px var(--ok)}
+.prog{height:6px;border-radius:99px;overflow:hidden;background:var(--card2);margin:6px 0 6px}
+.prog i{display:block;height:100%;background:var(--acc);box-shadow:0 0 14px var(--acc);transition:width .8s cubic-bezier(.2,.8,.2,1)}
+
+/* tlačidlá */
+.btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:10px 22px;border-radius:99px;border:0;background:var(--acc);color:var(--onacc);font-weight:800;font-size:15px;letter-spacing:.04em;text-transform:uppercase;box-shadow:0 8px 30px -10px var(--acc);transition:transform .15s,box-shadow .2s}
+.btn:after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);transition:left .6s}
+.btn:hover:after{left:120%}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 36px -8px var(--acc)}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line2);box-shadow:none}
+.btn.ghost:hover{border-color:var(--acc);color:var(--acc)}
+.btn.red{background:var(--red);color:#fff;box-shadow:0 8px 30px -10px var(--red)}
+.btn.sm{min-height:42px;padding:6px 16px;font-size:13px}
+.btn[disabled]{opacity:.4;pointer-events:none}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+
+/* intro */
+#intro{position:fixed;inset:0;z-index:60;background:#060607;color:#f2efe8;display:flex;flex-direction:column;justify-content:center;padding:28px;overflow:hidden}
+#intro:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 2px,transparent 2px 4px);pointer-events:none}
+#intro:after{content:"";position:absolute;left:0;right:0;height:120px;top:-120px;background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--acc) 18%,transparent),transparent);animation:sweep 2.6s ease-in-out infinite;pointer-events:none}
+@keyframes sweep{to{top:110%}}
+#intro .big{position:absolute;right:-3vw;bottom:-8vh;font-family:var(--display);font-size:62vh;line-height:1;color:transparent;-webkit-text-stroke:2px color-mix(in srgb,var(--acc) 40%,transparent);animation:zoom 9s ease-out forwards}
+@keyframes zoom{from{transform:scale(1.25);opacity:0}to{transform:scale(1);opacity:1}}
+#intro .ln{position:relative;font-family:var(--display);text-transform:uppercase;font-size:clamp(46px,11vw,110px);line-height:.9;max-width:14ch;opacity:0;transform:translateY(40px) scale(1.08);filter:blur(14px);transition:all .7s cubic-bezier(.2,.8,.2,1)}
+#intro .ln.on{opacity:1;filter:none;transform:none}
+#intro .ln:nth-child(3){color:var(--acc)}
+#intro p{position:relative;max-width:44ch;font-size:18px;opacity:0;transform:translateY(10px);transition:all .8s;color:#c9c5bb}
+#intro p.on{opacity:1;transform:none}
+#intro .btn{align-self:flex-start;margin-top:20px;opacity:0;transform:translateY(10px);transition:opacity .6s,transform .6s}
+#intro .btn.on{opacity:1;transform:none}
+#intro .skip{position:absolute;top:16px;right:18px;font-family:var(--mono);font-size:12px;color:#8a867d;background:none;border:0;letter-spacing:.2em;z-index:2;min-height:44px}
+
+/* kapitola */
+.ch-head{display:flex;align-items:center;gap:14px;margin:22px 0 14px}
+.ch-head h2{font-size:clamp(30px,7.4vw,58px);margin:4px 0 0;line-height:.98}
+.ring{width:56px;height:56px;flex:none}
+.guide{display:flex;gap:12px;align-items:flex-end;margin-bottom:16px}
+.guide .av{width:52px;height:52px;flex:none;border-radius:50%;overflow:hidden;border:1px solid var(--line2)}
+.bubble{flex:1;background:var(--card2);border:1px solid var(--line);border-radius:22px 22px 22px 6px;padding:12px 16px;position:relative}
+.bubble .who{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--acc);text-transform:uppercase;display:flex;justify-content:space-between;gap:8px}
+.bubble .who i{font-style:normal;color:var(--muted)}
+.bubble p{margin:.35em 0 .55em}
+.dots{display:inline-flex;gap:5px;padding:10px 2px}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--muted);animation:dot 1s infinite}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,60%,100%{transform:none;opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+.pills{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 12px;scrollbar-width:none}
+.pills::-webkit-scrollbar{display:none}
+.pill{flex:none;min-height:44px;padding:8px 16px;border-radius:99px;border:1px solid var(--line2);background:var(--card);font-weight:700;font-size:14px;white-space:nowrap;transition:all .2s}
+.pill.on{background:var(--acc);color:var(--onacc);border-color:var(--acc);box-shadow:0 0 24px -6px var(--acc)}
+.pill.done:after{content:" ✓";color:var(--ok)}
+.pill.on.done:after{color:var(--onacc)}
+.task{position:relative;border:1px solid var(--line);border-radius:var(--r);background:linear-gradient(180deg,var(--card2),var(--card));padding:20px;min-height:260px;overflow:hidden}
+.task:before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--acc),transparent);opacity:.8}
+.task h3{margin-top:0}
+.task .instr{color:var(--ink2);margin:.2em 0 1em}
+.fb{min-height:28px;font-weight:800;margin-top:12px}
+.fb.ok{color:var(--ok);text-shadow:0 0 18px color-mix(in srgb,var(--ok) 60%,transparent)} .fb.bad{color:var(--bad)}
+.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-7px) skewX(-4deg)}40%,80%{transform:translateX(7px) skewX(4deg)}}
+.why{margin-top:12px;border-left:3px solid var(--acc);background:color-mix(in srgb,var(--acc) 8%,transparent);padding:12px 14px;border-radius:0 14px 14px 0;color:var(--ink2);animation:enter .5s}
+.why b{color:var(--ink)}
+details.hint{margin-top:10px}
+details.hint summary{cursor:pointer;font-weight:700;color:var(--muted);min-height:32px}
+.fact{margin-top:14px;border:1px dashed var(--line2);border-radius:16px;padding:14px;background:rgba(255,255,255,.02);animation:enter .5s}
+.fact .k{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--acc2);font-weight:700;text-transform:uppercase}
+
+/* možnosti */
+.opts{display:grid;gap:10px}
+.opt{position:relative;text-align:left;min-height:54px;padding:13px 16px;border:1px solid var(--line2);border-radius:14px;background:rgba(255,255,255,.03);font-size:16px;line-height:1.35;transition:all .18s}
+.opt:hover{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 8%,transparent);transform:translateX(3px)}
+.opt.ok{background:color-mix(in srgb,var(--ok) 16%,transparent);border-color:var(--ok);box-shadow:0 0 24px -8px var(--ok)}
+.opt.bad{background:color-mix(in srgb,var(--bad) 12%,transparent);border-color:var(--bad);animation:shake .4s}
+.opt[disabled]{cursor:default}
+
+/* triedič – swipe */
+.sorter .stage{position:relative;height:190px;margin-bottom:12px;touch-action:pan-y}
+.sorter .card1{position:absolute;inset:0;border:1px solid var(--line2);border-radius:20px;padding:22px;background:linear-gradient(160deg,var(--card2),#0e0e12);font-size:clamp(18px,3.6vw,22px);font-weight:800;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.25;cursor:grab;user-select:none;box-shadow:0 20px 50px -20px rgba(0,0,0,.8);transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .35s}
+.sorter .card1.drag{transition:none;cursor:grabbing}
+.sorter .ghostc{position:absolute;inset:8px -6px -8px;border-radius:20px;border:1px solid var(--line);background:var(--card);transform:rotate(-2deg)}
+.sorter .hintL,.sorter .hintR{position:absolute;top:12px;font-family:var(--mono);font-size:12px;font-weight:800;letter-spacing:.12em;padding:4px 10px;border-radius:8px;opacity:0;z-index:2;transition:opacity .1s}
+.sorter .hintL{left:12px;border:2px solid var(--acc);color:var(--acc)}
+.sorter .hintR{right:12px;border:2px solid var(--acc2);color:var(--acc2)}
+.sorter .bins{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sorter .bins.b3{grid-template-columns:1fr 1fr 1fr}
+.sorter .bin{min-height:60px;border-radius:14px;border:1px solid var(--line2);background:var(--card);font-weight:800;padding:8px;font-size:14px;line-height:1.2;transition:all .2s}
+.sorter .bin:hover{border-color:var(--acc)}
+.sorter .bins:not(.b3) .bin:first-child{border-color:color-mix(in srgb,var(--acc) 55%,transparent)}
+.sorter .bins:not(.b3) .bin:last-child{border-color:color-mix(in srgb,var(--acc2) 55%,transparent)}
+.sorter .cnt{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px;display:flex;justify-content:space-between}
+.tilesrow{display:flex;flex-direction:column;gap:8px}
+.tile{display:flex;align-items:center;gap:12px;border:1px solid var(--line2);border-radius:14px;background:var(--card);padding:10px 12px;min-height:54px;font-size:15px;transition:transform .2s}
+.tile .yr{font-family:var(--mono);font-weight:700;min-width:96px;color:var(--acc);font-size:13px}
+.tile .mv{margin-left:auto;display:flex;gap:6px}
+.tile .mv button{width:42px;height:42px;border-radius:12px;border:1px solid var(--line2);background:var(--card2);font-weight:800}
+.tile .mv button:hover{border-color:var(--acc);color:var(--acc)}
+
+/* ostrov – radar */
+.island{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--line2);background:#06100e}
+.island svg{width:100%;height:auto;max-height:260px;display:block}
+input[type=range]{width:100%;accent-color:var(--acc);height:40px}
+.big-num{font-family:var(--display);font-size:56px;line-height:1;color:var(--acc)}
+
+.powers{display:grid;gap:10px;grid-template-columns:1fr}
+@media(min-width:640px){.powers{grid-template-columns:repeat(3,1fr)}}
+.pbox{border:1px solid var(--line2);border-radius:16px;padding:12px;min-height:110px;background:var(--card)}
+.pbox h4{margin:0 0 6px;font-family:var(--display);font-weight:400;font-size:24px;text-transform:uppercase}
+.pbox.one{grid-column:1/-1;background:var(--red);color:#fff;border-color:var(--red);text-align:center;box-shadow:0 0 60px -10px var(--red);animation:pulse 1.4s infinite}
+@keyframes pulse{50%{box-shadow:0 0 90px -6px var(--red)}}
+
+.pillars{color:var(--ink)}
+.pillars svg{width:100%;height:auto;display:block}
+.plist{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}
+@media(min-width:640px){.plist{grid-template-columns:repeat(3,1fr)}}
+.plist button{min-height:52px;border:1px solid var(--line2);border-radius:12px;background:var(--card);font-weight:800;font-size:14px;padding:6px;transition:all .2s}
+.plist button:hover{border-color:var(--acc);color:var(--acc)}
+.plist button.gone{opacity:.3;text-decoration:line-through}
+.quake{animation:quake .5s}
+@keyframes quake{20%{transform:translate(-6px,3px)}40%{transform:translate(5px,-4px)}60%{transform:translate(-4px,2px)}80%{transform:translate(3px,-2px)}}
+
+.keys{display:grid;place-items:center;gap:10px;text-align:center}
+.keybtn{width:190px;height:190px;border-radius:50%;border:0;background:radial-gradient(circle at 35% 30%,#fff7b0,var(--yellow) 45%,#c9a600);display:grid;place-items:center;box-shadow:0 0 0 10px color-mix(in srgb,var(--yellow) 15%,transparent),0 0 80px -10px var(--yellow);touch-action:manipulation;animation:breathe 2.4s ease-in-out infinite}
+@keyframes breathe{50%{box-shadow:0 0 0 22px color-mix(in srgb,var(--yellow) 8%,transparent),0 0 110px -6px var(--yellow)}}
+.keybtn:active{transform:scale(.93) rotate(-10deg)}
+.keybtn svg{width:110px;height:110px}
+
+.news{border:1px solid var(--line2);border-radius:14px;background:#f2efe8;color:#111;padding:16px;font-family:var(--type);box-shadow:0 20px 50px -20px rgba(0,0,0,.9);transform:rotate(-.6deg);animation:drop .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes drop{from{transform:translateY(-20px) rotate(-4deg);opacity:0}}
+.news .mast{font-family:var(--display);letter-spacing:.08em;border-bottom:3px double #111;padding-bottom:6px;margin-bottom:10px;display:flex;justify-content:space-between;font-size:16px}
+.news .hl{font-size:22px;font-weight:700;line-height:1.25;min-height:80px}
+
+/* ===== REŽIM: kamerový záznam ===== */
+html.regime #app{filter:grayscale(1) contrast(1.05) brightness(.95)}
+html.regime body{font-family:var(--type)}
+#hud{position:fixed;inset:0;pointer-events:none;z-index:75;opacity:0;transition:opacity .8s}
+html.regime #hud{opacity:1}
+#hud:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 1px,transparent 1px 3px);animation:flick .15s infinite}
+#hud:after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.7))}
+@keyframes flick{50%{opacity:.85}}
+#hud .rec,#hud .tc,#hud .cam,#hud .crn{position:absolute;font-family:var(--vt);font-size:26px;color:#fff;text-shadow:0 0 6px rgba(255,255,255,.6);z-index:1}
+#hud .rec{left:18px;bottom:16px;color:#ff2a2a;text-shadow:0 0 8px #ff2a2a}
+#hud .rec i{display:inline-block;width:12px;height:12px;border-radius:50%;background:#ff2a2a;margin-right:6px;animation:blink 1s infinite}
+#hud .tc{right:18px;bottom:16px}
+#hud .cam{right:18px;top:72px;font-size:20px;opacity:.8}
+#stampLayer{position:fixed;inset:0;pointer-events:none;z-index:80}
+.stamp{position:absolute;border:4px solid #ff2a2a;color:#ff2a2a;font-family:var(--mono);font-weight:800;letter-spacing:.12em;padding:6px 14px;border-radius:8px;transform:rotate(-14deg) scale(2.4);opacity:0;animation:stampIn .35s cubic-bezier(.3,1.6,.6,1) forwards;font-size:22px;background:rgba(255,42,42,.06);text-align:center;line-height:1.1;text-shadow:0 0 12px rgba(255,42,42,.6);box-shadow:0 0 30px -6px rgba(255,42,42,.7)}
+@keyframes stampIn{to{transform:rotate(-14deg) scale(1);opacity:.95}}
+.regbox{font-family:var(--type);background:#e9e6dd;border:1px solid #444;border-radius:4px;padding:16px;color:#1b1b1b;box-shadow:0 20px 60px -20px #000}
+.regbox .hd{display:flex;justify-content:space-between;gap:8px;font-size:12px;border-bottom:2px solid #333;padding-bottom:6px;margin-bottom:10px;letter-spacing:.08em}
+.regbox input,.regbox textarea,.regbox select{font-family:var(--type);font-size:17px;width:100%;padding:10px;border:2px solid #333;border-radius:2px;background:#fff;color:#111}
+.regbox label{display:block;font-weight:700;margin:10px 0 4px}
+.regbox .btn{background:#222;color:#fff;box-shadow:none;border-radius:4px;font-family:var(--type)}
+.regbox .opt{background:#fff;color:#111;border-color:#333;border-radius:4px}
+.typer{font-family:var(--type);font-size:20px;min-height:90px;border:2px solid #333;background:#fff;padding:12px;white-space:pre-wrap;color:#111}
+.song{display:flex;align-items:center;gap:10px;padding:10px;border:2px solid #333;border-radius:4px;margin:6px 0;background:#fff;min-height:52px;color:#111}
+.song.ban{text-decoration:line-through;opacity:.5}
+.song .s{flex:1}
+.song small{display:block;color:#555;font-size:13px}
+.ballot{background:#fff;border:2px solid #333;padding:18px;text-align:center;max-width:380px;margin:0 auto;font-family:var(--type);color:#111}
+.runaway{position:relative;height:220px;border:2px dashed #333;border-radius:6px;overflow:hidden;background:repeating-linear-gradient(90deg,transparent 0 38px,rgba(0,0,0,.08) 38px 40px)}
+.runaway .btn{position:absolute;transition:left .18s,top .18s}
+.reveal{margin-top:16px;border:1px solid color-mix(in srgb,var(--yellow) 50%,transparent);background:linear-gradient(135deg,#17150a,#0d0d10);color:var(--ink);padding:16px 18px;border-radius:16px;box-shadow:0 0 60px -20px var(--yellow);animation:enter .6s}
+.reveal .k{font-family:var(--mono);font-size:12px;letter-spacing:.25em;color:var(--yellow);font-weight:800}
+.reveal p{margin:.4em 0}
+.lost{display:grid;gap:8px;margin:12px 0}
+.lost div{display:flex;gap:12px;align-items:center;border:1px solid var(--line2);border-radius:14px;padding:10px 12px;background:var(--card);animation:enter .5s}
+.lost div b{font-family:var(--display);font-weight:400;font-size:24px;min-width:72px;color:var(--acc)}
+.bigdate{font-family:var(--display);font-size:clamp(64px,17vw,150px);line-height:.9;color:var(--acc);text-shadow:0 0 50px color-mix(in srgb,var(--acc) 50%,transparent)}
+#flood{position:fixed;inset:0;z-index:74;pointer-events:none;background:var(--acc);clip-path:circle(0 at 50% 50%)}
+#fxc{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:79}
+
+/* slovník */
+.term{border:0;border-bottom:2px dotted var(--acc);cursor:help;background:none;padding:0;font:inherit;color:inherit}
+.term:hover{color:var(--acc)}
+#sheet{position:fixed;left:0;right:0;bottom:0;z-index:90;transform:translateY(105%);visibility:hidden;transition:transform .35s cubic-bezier(.2,.8,.2,1),visibility .35s;background:#141418;color:var(--ink);border-top:1px solid var(--line2);border-radius:24px 24px 0 0;max-height:74vh;overflow:auto;padding:20px 22px 28px}
+#sheet.on{transform:none;visibility:visible;box-shadow:0 -20px 60px rgba(0,0,0,.6)}
+#sheet .x{float:right}
+#sheet h2{font-size:38px}
+#sheet dl dt{font-weight:800;margin-top:14px;color:var(--acc)}
+#sheet dl dd{margin:2px 0 0;color:var(--ink2)}
+#veil{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);z-index:85;opacity:0;pointer-events:none;transition:opacity .3s}
+#veil.on{opacity:1;pointer-events:auto}
+
+/* skúška a certifikát */
+.timer{height:6px;background:var(--card2);border-radius:99px;overflow:hidden;margin:8px 0 14px}
+.timer i{display:block;height:100%;background:var(--acc2);width:100%;box-shadow:0 0 12px var(--acc2)}
+.res{display:grid;gap:8px;margin:12px 0}
+.res div{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line2);padding:6px 0}
+.cert{border:3px solid #141414;background:#fffdf6;color:#141414;padding:28px 22px;border-radius:6px;text-align:center;position:relative;max-width:640px;margin:16px auto;font-family:var(--body)}
+.cert:before{content:"";position:absolute;inset:8px;border:1.5px solid #141414;pointer-events:none}
+.cert .eyebrow{color:#e2321f}
+.cert .nm{font-family:var(--display);font-size:46px;text-transform:uppercase;margin:6px 0;line-height:1}
+.cert .man{font-family:var(--type);font-size:19px;margin:14px auto;max-width:44ch}
+.cert .keysrow{font-size:26px;letter-spacing:6px}
+textarea.manif{width:100%;min-height:90px;font:inherit;font-size:17px;padding:12px;border:1px solid var(--line2);border-radius:14px;background:var(--card2);color:var(--ink)}
+input.txt{width:100%;font:inherit;font-size:17px;padding:12px;border:1px solid var(--line2);border-radius:14px;background:var(--card2);color:var(--ink);min-height:50px}
+textarea.manif:focus,input.txt:focus{outline:2px solid var(--acc);outline-offset:1px}
+.rights{display:flex;flex-wrap:wrap;gap:8px}
+.rights button{min-height:44px;border:1px solid var(--line2);border-radius:99px;background:var(--card);padding:6px 14px;font-size:14px;transition:all .2s}
+.rights button.on{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
+footer{font-size:13px;color:var(--muted);text-align:center;margin-top:50px}
+.teacher{border:1px solid var(--line);border-radius:var(--r);background:var(--card);padding:18px}
+
+@media print{
+  body *{visibility:hidden} .cert,.cert *{visibility:visible}
+  .cert{position:absolute;left:0;top:0;right:0;margin:0 auto}
+  body:before,body:after{display:none}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01s!important;animation-iteration-count:1!important;transition-duration:.01s!important}}
+@media(max-width:420px){body{font-size:16px}.task{padding:15px}.logo b{font-size:17px;letter-spacing:.08em}.logo small{display:none}}
+
+/* v2.1 – prístupnosť a opravy z recenzie */
+:focus-visible{outline:3px solid var(--acc);outline-offset:3px;border-radius:10px}
+.btn:focus-visible,.pill:focus-visible{outline-offset:4px}
+.model{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:#555;background:#d9d5ca;border-left:3px solid #ff2a2a;padding:4px 8px;margin:-4px 0 10px}
+@media(max-width:480px){.sorter .bins.b3{grid-template-columns:1fr}.sorter .bins.b3 .bin{min-height:52px}}
+.term{display:inline;text-align:inherit;line-height:inherit;letter-spacing:inherit}
+@media(max-width:480px){#hud .cam{display:none}#hud .rec,#hud .tc{font-size:20px}}
+.sorter .stage.open{height:auto}
+.sorter .stage.open .card1{position:relative;inset:auto;min-height:190px;cursor:default}
+.sorter .card1{flex-direction:column}
+.sorter .card1.right{border-color:var(--ok);box-shadow:0 0 30px -10px var(--ok)}
+.sorter .card1.wrong{border-color:var(--bad);box-shadow:0 0 30px -10px var(--bad)}
+.sorter .verdict{width:100%;margin-top:14px;padding-top:12px;border-top:1px solid var(--line2);text-align:left;font-size:16px;font-weight:500;line-height:1.45;color:var(--ink2);animation:enter .35s}
+.sorter .verdict b{display:block;margin-bottom:4px;font-weight:800}
+.sorter .verdict .okc{color:var(--ok)} .sorter .verdict .badc{color:var(--bad)}
+.sorter .verdict .btn{margin-top:12px}
+</style></head>
+<body class="obcan">
+<div id="app"><header class="top"><div class="in"></div></header><main id="main" class="wrap"></main></div>
+<div id="intro" class="hidden" role="dialog" aria-label="Úvod spisu"></div>
+<div id="hud" aria-hidden="true"><span class="cam">KAMERA 03 · ÚRAD PRE VECI OBČANOV</span><span class="rec"><i></i>REC</span><span class="tc"></span></div>
+<div id="flood" aria-hidden="true"></div><canvas id="fxc" aria-hidden="true"></canvas>
+<div id="stampLayer" aria-hidden="true"></div>
+<div id="veil"></div><aside id="sheet" role="dialog" aria-modal="true" aria-label="Slovník"></aside>
+<script>// ===== DÁTA: úrovne, spisy, slovník, kvízy =====
+const LV = {
+  obcan:{n:'Občan', who:'8. – 9. ročník ZŠ', g:'Babka Ema', gd:'Modelová postava podľa spomienok pamätníkov. V novembri 1989 by mala 19 rokov.', av:'ema'},
+  volic:{n:'Volič', who:'1. – 2. ročník SŠ', g:'Novinárka Lea', gd:'Píše o politike a vie, ako rýchlo sa dá sloboda stratiť.', av:'lea'},
+  sudca:{n:'Ústavný sudca', who:'3. – 4. ročník SŠ, maturanti', g:'Sudkyňa Hana', gd:'Rozhoduje o tom, či zákony neporušujú ústavu.', av:'hana'}
+};
+
+const CH = [
+ {no:'01', name:'Ostrov', sub:'Čo je vlastne sloboda?',
+  intro:['Si sám na ostrove.','Môžeš úplne všetko.','Potom pripláva loď.','Zistíš, kde sa končí tvoja sloboda a prečo pravidlá slobodu nemusia brať, ale môžu ju chrániť.'],
+  story:{
+   obcan:'Predstav si, že stroskotáš na pustom ostrove. Nikto ti nič neprikazuje: môžeš spievať o polnoci, jesť kokosy, kedy chceš, a spať, kde chceš. Si úplne slobodný. Lenže potom na obzore uvidíš loď… Poďme zistiť, čo sa so slobodou stane, keď už nie si sám.',
+   volic:'Robinson Crusoe bol úplne slobodný a zároveň úplne sám. [[sloboda|Sloboda]] sa stáva zaujímavou až vtedy, keď narazí na slobodu niekoho iného. Na ostrov budú pribúdať ľudia. Vymyslíš pravidlá tak, aby nikto nebol otrokom a nikto tyranom?',
+   sudca:'Filozof John Stuart Mill tvrdil, že slobodu človeka smieme obmedziť iba vtedy, ak tým zabránime škode na iných. Tomu sa hovorí [[princíp škody]]. Znie to jednoducho. Na ostrove zistíš, že každé pravidlo niekomu niečo dá a inému niečo vezme. Hľadaj hranicu.'},
+  tasks:{obcan:['ostrov','hranica'], volic:['ostrov','hranica'], sudca:['ostrov','hranica','negpos']},
+  quiz:[
+   {q:'Kde sa podľa princípu škody končí tvoja sloboda?', o:['Tam, kde by som už škodil(a) iným.','Nikde, sloboda nemá hranice.','Tam, kde to určí najsilnejší.'], a:'Sloboda'},
+   {q:'Prečo pravidlá na ostrove slobodu nezničili?', o:['Chránili slobodu všetkých, nielen najsilnejšieho.','Lebo každé pravidlo je automaticky dobré.','Lebo ich aj tak nikto nedodržiaval.'], a:'Sloboda'},
+   {q:'Ktorá veta najlepšie vystihuje slobodu?', o:['Môžem rozhodovať o svojom živote, kým tým neubližujem iným.','Môžem robiť úplne všetko, čo chcem.','Poslúcham toho, kto vie, čo je pre mňa dobré.'], a:'Sloboda'}],
+  clue:'Na ostrove žije sto ľudí. Kto bude o pravidlách rozhodovať?'},
+
+ {no:'02', name:'Kto rozhoduje?', sub:'Demokracia nie je len vláda väčšiny',
+  intro:['Deväť ľudí hlasuje za.','Jeden je proti.','Je to spravodlivé?','Zistíš, prečo demokracia chráni aj menšinu a prečo sa moc delí na tri časti.'],
+  story:{
+   obcan:'Ľudí na ostrove je už veľa a začínajú sa hádať. Kto má rozhodovať? Najsilnejší? Najmúdrejší? Všetci? Vyskúšaš si, prečo [[demokracia]] neznamená len to, že vždy vyhrá väčšina.',
+   volic:'[[demokracia|Demokracia]] doslova znamená „vláda ľudu“. Lenže aj ľud sa môže mýliť alebo byť krutý. Väčšina ostrova chce chlapcovi Kaiovi zobrať loďku. Je to spravodlivé, keď to odhlasovali? A čo ochráni toho, kto je v menšine?',
+   sudca:'Montesquieu tvrdil, že ak sa moc nemá zneužiť, musí moc zastavovať moc. Rozdelíš štát na tri moci a potom si vyskúšaš, čo sa stane, keď ich zlúčiš do jednej ruky. A pozor: demokracia sa nemeria len tým, či sa konajú voľby.'},
+  tasks:{obcan:['kai','delba','jetodemo'], volic:['kai','delba','jetodemo'], sudca:['kai','delba','jetodemo']},
+  quiz:[
+   {q:'Väčšina odhlasuje, že jednému človeku svojvoľne a bez náhrady zoberie majetok. Je to v demokracii v poriadku?', o:['Nie, demokracia chráni aj práva menšiny.','Áno, väčšina má vždy pravdu.','Áno, ak bolo hlasovanie tajné.'], a:'Demokracia'},
+   {q:'Prečo sa moc v štáte delí na tri časti?', o:['Aby sa navzájom kontrolovali a nikto nemal všetku moc.','Aby bolo viac úradníkov.','Aby sa rozhodovalo rýchlejšie.'], a:'Demokracia'},
+   {q:'Ktorá moc rozhoduje, či niekto porušil zákon?', o:['Súdna','Výkonná','Zákonodarná'], a:'Demokracia'}],
+  clue:'Ostrov má ústavu, súd aj voľby. Čo keby ti ich niekto zobral?'},
+
+ {no:'03', name:'15 minút v krajine, kde nesmieš', sub:'Experiment. Zažiješ to na vlastnej koži.', special:true,
+  intro:['Na 15 minút','prídeš o slobodu.','Postavy sú vymyslené. Mechanizmy nie.','Šesť modelových situácií vychádza zo skutočných praktík režimu, dokumentov a svedectiev. Po každej sa dozvieš, čo je historický fakt. Experiment môžeš kedykoľvek ukončiť.'],
+  story:{
+   obcan:'Teraz ti niečo ukážem. Nebudem ti rozprávať, ako to bolo. Zažiješ to sám, na 15 minút. Som vymyslená postava, ale ľudia v mojom veku, ich rodičia aj spolužiaci zažívali podobné situácie. Mená a rozhovory v experimente sú vymyslené, mechanizmy vychádzajú zo skutočných skúseností ľudí. Ak to bude nepríjemné, je to v poriadku. Malo to byť nepríjemné. A keby to bolo priveľa, experiment môžeš kedykoľvek ukončiť.',
+   volic:'Novinár v roku 1985 nesmel napísať, čo videl. Teraz si občanom štátu, ktorý ti chce pomáhať, aspoň to tvrdí. Vyplň dotazník, povedz svoj názor, vyber si hudbu. A sleduj, čo sa stane s tvojimi odpoveďami. Situácie sú modelové, po každej ti poviem, čo sa naozaj dialo.',
+   sudca:'Ústava Československa z roku 1960 sľubovala aj slobodu prejavu, ale iba „v súlade so záujmami pracujúceho ľudu“. A článok 4 tej istej ústavy vyhlásil [[vedúca úloha strany|vedúcu úlohu komunistickej strany]]. Sleduj, čo sa stane s právami, keď nad nimi niekto stojí. Pri každej modelovej situácii rozlišuj, čo je historický fakt a čo didaktická rekonštrukcia.'},
+  tasks:{obcan:['r_dotaznik','r_nazor','r_hudba','r_donos','r_volby','r_hranica','r_koniec'], volic:['r_dotaznik','r_nazor','r_hudba','r_donos','r_volby','r_hranica','r_koniec'], sudca:['r_dotaznik','r_nazor','r_hudba','r_donos','r_volby','r_hranica','r_koniec']},
+  quiz:[
+   {q:'Čo bola výjazdná doložka?', o:['Povolenie štátu na cestu do zahraničia.','Lístok na medzinárodný vlak.','Pas, ktorý dostal každý automaticky.'], a:'Život v neslobode'},
+   {q:'Prečo voľby pred rokom 1989 neboli slobodné?', o:['Nebolo z čoho vyberať a ísť za plentu bolo podozrivé.','Lebo sa nevolilo vôbec.','Lebo voliť mohli len muži.'], a:'Život v neslobode'},
+   {q:'Na čo slúžil kádrový posudok?', o:['Štát podľa neho posudzoval politickú spoľahlivosť človeka aj jeho rodiny.','Bol to zoznam známok zo školy.','Bol to lekársky záznam.'], a:'Život v neslobode'}],
+  clue:'Mali zbrane, políciu aj televíziu. Ako je možné, že prehrali?'},
+
+ {no:'04', name:'Prečo padla moc bez výstrelu', sub:'Piliere moci a november 1989',
+  intro:['Oni mali tanky.','Ľudia mali kľúče.','Vyhrali ľudia.','Zistíš, na čom stojí každá moc a prečo sa v novembri 1989 zrútila bez jediného výstrelu.'],
+  story:{
+   obcan:'V roku 1989 mala komunistická strana armádu, políciu, televíziu aj väznice. Ľudia na námestiach mali kľúče. A predsa vyhrali bez jediného výstrelu. Ako je to možné? Každá moc stojí na ľuďoch, ktorí ju poslúchajú. Keď prestanú, moc padne.',
+   volic:'Politológ Gene Sharp opísal moc ako budovu, ktorá stojí na pilieroch: armáda, úradníci, robotníci, médiá… Keď piliere prestanú niesť, strecha spadne. Presne to sa v novembri 1989 stalo za necelé dva týždne.',
+   sudca:'17. novembra polícia zbila študentov na Národnej triede v Prahe. O dvanásť dní neskôr Federálne zhromaždenie vyškrtlo z ústavy vedúcu úlohu strany. Zrekonštruuj, ktoré piliere padali, a premýšľaj, prečo [[nenásilie]] zafungovalo lepšie ako sila.'},
+  tasks:{obcan:['piliere','kluce','os'], volic:['piliere','kluce','os'], sudca:['piliere','kluce','os']},
+  quiz:[
+   {q:'Kedy bol generálny štrajk?', o:['27. novembra 1989 od 12.00 do 14.00','17. novembra 1989 celý deň','1. mája 1990'], a:'November 1989'},
+   {q:'Prečo režim padol bez výstrelu?', o:['Ľudia prestali poslúchať a moc stratila piliere, na ktorých stála.','Armáda porazila komunistickú stranu.','Pomohli zahraničné vojská.'], a:'November 1989'},
+   {q:'Čo sa stalo 29. novembra 1989?', o:['Z ústavy zmizla vedúca úloha komunistickej strany.','Václav Havel sa stal prezidentom.','Konali sa prvé slobodné voľby.'], a:'November 1989'}],
+  clue:'Slobodu sme získali. Dá sa však stratiť aj bez tankov?'},
+
+ {no:'05', name:'Ako sa sloboda stráca dnes', sub:'Varovné signály a hranice slobody prejavu',
+  intro:['Nikto nepríde s tankom.','Stane sa to potichu.','Kúsok po kúsku.','Naučíš sa rozoznať varovné signály a zistíš, kde sa končí sloboda prejavu.'],
+  story:{
+   obcan:'Dnes nikto nepríde s tankom a nepovie: „Odteraz nemáte slobodu.“ Ak sa sloboda stráca, deje sa to potichu, kúsok po kúsku, niekedy dokonca podľa zákona. Naučíš sa rozoznať varovné signály. A zistíš aj to, kde sa končí [[sloboda prejavu]].',
+   volic:'Ako novinárka čítam každý deň stovky titulkov. Väčšina z nich je obyčajná politika: môžeš s ňou nesúhlasiť, ale k demokracii patrí. Niektoré sú však varovné svetlá. Precvičíš si ich rozlišovanie na vymyslenej krajine Valdória.',
+   sudca:'Politológovia Steven Levitsky a Daniel Ziblatt opísali, ako demokracie umierajú: nie pri puči, ale postupne, v rukách zvolených politikov. Štyri varovné signály: odmietanie demokratických pravidiel, popieranie legitimity súperov, tolerovanie násilia a ochota obmedziť slobody kritikov a médií. Ukážem ti aj poistky, ktoré demokraciu chránia.'},
+  tasks:{obcan:['signaly','prejav'], volic:['signaly','prejav'], sudca:['signaly','prejav','poistky','proporc']},
+  quiz:[
+   {q:'Ktorá správa je varovný signál pre demokraciu?', o:['Premiér vyhlási kritických novinárov za nepriateľov národa.','Opozícia kritizuje štátny rozpočet.','Vláda zníži dane.'], a:'Dnes'},
+   {q:'Je sloboda prejavu neobmedzená?', o:['Nie. Nesmiem sa napríklad vyhrážať, ohovárať ani podnecovať k násiliu.','Áno, povedať môžem čokoľvek.','Nie. Nesmiem kritizovať vládu.'], a:'Dnes'},
+   {q:'Kto posudzuje, či je zákon v súlade s ústavou?', o:['Ústavný súd','Prezident','Polícia'], a:'Dnes'}],
+  clue:'Všetky spisy sú uzavreté. Čaká ťa skúška a tvoj vlastný manifest.'}
+];
+
+const EXTRA = [
+ {q:'Čo znamená slovo demokracia?', o:['Vláda ľudu','Vláda jedného človeka','Vláda najbohatších'], a:'Demokracia'},
+ {q:'Prečo je dôležité tajné hlasovanie?', o:['Aby nikoho nemohli potrestať za to, ako volil.','Aby voľby trvali kratšie.','Aby nikto nevedel, kto vyhral.'], a:'Demokracia'},
+ {q:'Čo je právny štát?', o:['Štát, v ktorom aj vláda musí dodržiavať zákony.','Štát, kde pracuje veľa právnikov.','Štát, kde zákony píše vodca podľa nálady.'], a:'Demokracia'},
+ {q:'Čo je cenzúra?', o:['Keď štát kontroluje a zakazuje, čo sa smie povedať, napísať alebo zahrať.','Oprava pravopisu v školskej slohovke.','Hodnotenie filmu kritikom.'], a:'Život v neslobode'},
+ {q:'Čo bola železná opona?', o:['Strážená hranica s ostnatým drôtom, ktorá bránila ľuďom odísť na Západ.','Opona v Národnom divadle.','Hrádza proti povodniam.'], a:'Život v neslobode'},
+ {q:'Ako sa volalo občianske hnutie, ktoré vzniklo na Slovensku v novembri 1989?', o:['Verejnosť proti násiliu','Občianske fórum','Charta 77'], a:'November 1989'},
+ {q:'Kto bol zvolený za prezidenta 29. decembra 1989?', o:['Václav Havel','Alexander Dubček','Gustáv Husák'], a:'November 1989'},
+ {q:'Kedy sa po roku 1989 konali prvé slobodné voľby?', o:['V júni 1990','V decembri 1989','V januári 1993'], a:'November 1989'},
+ {q:'Čo patrí k slobode prejavu?', o:['Na proteste nesiem transparent proti vláde.','Vyhrážam sa spolužiakovi.','Šírim vymyslenú klebetu o susedovi.'], a:'Dnes'},
+ {q:'Čo je dezinformácia?', o:['Zámerne nepravdivá informácia, ktorá má ľudí zmiasť.','Každá správa, s ktorou nesúhlasím.','Chyba v pravopise.'], a:'Dnes'},
+ {q:'Kto je verejný ochranca práv (ombudsman)?', o:['Nezávislý orgán, ktorý chráni základné práva ľudí voči úradom verejnej správy.','Šéf polície.','Hovorca vlády.'], a:'Dnes'},
+ {q:'Čo hovorí princíp „moc zastavuje moc“?', o:['Žiadna moc nesmie byť bez kontroly inej moci.','Najsilnejší má vždy pravdu.','Moc treba úplne zrušiť.'], a:'Demokracia'}
+];
+
+const GLOSS = {
+ 'sloboda':'Možnosť rozhodovať o vlastnom živote: čo si myslím, čo hovorím, kam idem, čomu verím. V spoločnosti s inými ľuďmi má hranicu: nesmie ubližovať slobode ostatných.',
+ 'princíp škody':'Myšlienka filozofa J. S. Milla (O slobode, 1859): donucovaciu moc voči dospelému človeku možno oprávnene použiť iba na to, aby sa zabránilo škode na iných. Nie preto, že sa jeho správanie niekomu nepáči alebo ho uráža. Ani pri škode nie je každý zásah automaticky oprávnený: musí byť primeraný.',
+ 'sloboda od a sloboda na':'Filozof Isaiah Berlin (1958) rozlíšil dve slobody. Negatívna sloboda (sloboda OD): neprítomnosť vonkajších zásahov a prekážok, nikto mi nebráni. Pozitívna sloboda (sloboda NA): byť sám sebe pánom, rozhodovať o vlastnom živote a mať na to schopnosti a podmienky. Berlin upozorňoval, že pozitívnu slobodu možno aj zneužiť, keď niekto tvrdí, že vie lepšie, čo je pre ľudí „naozaj“ dobré.',
+ 'demokracia':'Z gréčtiny: démos = ľud, kratos = vláda. Ľudia si slobodne volia zástupcov, môžu ich vymeniť a ich základné práva sú chránené aj pred väčšinou.',
+ 'proporcionalita':'Test, ktorým ústavné súdy posudzujú, či je obmedzenie základného práva prípustné: 1. sleduje legitímny cieľ, 2. je naň vhodné, 3. je nevyhnutné (neexistuje miernejší prostriedok), 4. je primerané (prínos prevažuje nad zásahom do práva).',
+ 'tyrania väčšiny':'Situácia, keď väčšina hlasovaním utláča menšinu. Proti nej chránia ústava, ľudské práva a nezávislé súdy.',
+ 'ústava':'Najvyšší zákon štátu. Určuje, ako štát funguje, a zaručuje základné práva a slobody. V Slovenskej republike platí Ústava z roku 1992.',
+ 'deľba moci':'Rozdelenie moci na zákonodarnú (parlament), výkonnú (vláda, prezident) a súdnu (súdy). Navzájom sa kontrolujú, aby nikto nemal všetku moc.',
+ 'zákonodarná moc':'Moc schvaľovať zákony. Na Slovensku ju má Národná rada SR so 150 poslancami.',
+ 'výkonná moc':'Moc riadiť štát podľa zákonov: vláda, ministerstvá, prezident, polícia, úrady.',
+ 'súdna moc':'Nezávislé súdy, ktoré rozhodujú spory a posudzujú, či niekto porušil zákon. Ústavný súd posudzuje, či zákony neodporujú ústave.',
+ 'ústavný súd':'Nezávislý súdny orgán ochrany ústavnosti so sídlom v Košiciach. Okrem iného posudzuje súlad zákonov a iných právnych predpisov s ústavou. Ak vysloví nesúlad, predpis alebo jeho časť stráca účinnosť. Ak ho zákonodarca do 6 mesiacov nezosúladí s ústavou, stráca aj platnosť (čl. 125 Ústavy SR).',
+ 'právny štát':'Štát, v ktorom platia zákony pre všetkých, aj pre vládu. O vine a treste za trestný čin rozhoduje nezávislý súd na základe zákona.',
+ 'totalita':'Režim, ktorý chce ovládať celý život ľudí: prácu, školu, kultúru, myslenie. Nepripúšťa opozíciu ani slobodnú tlač. Taký bol v Československu komunistický režim v rokoch 1948 – 1989, najtvrdší v 50. rokoch.',
+ 'vedúca úloha strany':'Článok 4 ústavy ČSSR z roku 1960: vedúcou silou v spoločnosti a v štáte je komunistická strana. Zrušený bol 29. novembra 1989.',
+ 'Národný front':'Zoskupenie strán a organizácií pod vedením komunistickej strany. Vo voľbách ponúkal jedinú kandidátku, takže nebolo z čoho vyberať.',
+ 'kádrový posudok':'Hodnotenie politickej spoľahlivosti človeka. Rozhodoval o tom, či môže študovať, kde bude pracovať a či smie vycestovať. Zohľadňoval aj rodinu: náboženstvo, pôvod, príbuzných v zahraničí.',
+ 'cenzúra':'Kontrola a zákaz toho, čo sa smie povedať, napísať, vytlačiť, zahrať alebo vysielať. Najzákernejšia je autocenzúra: keď si človek sám zakáže hovoriť, lebo sa bojí.',
+ 'samizdat':'Zakázané texty, ktoré ľudia tajne prepisovali na písacích strojoch cez kopírovací papier a požičiavali si ich.',
+ 'ŠtB':'Štátna bezpečnosť, tajná politická polícia. Sledovala ľudí, odpočúvala, vypočúvala a verbovala spolupracovníkov. Jej archívy dnes sprístupňuje Ústav pamäti národa.',
+ 'železná opona':'Strážená hranica medzi východným a západným blokom: ostnatý drôt, elektrický prúd, hliadky so psami a samopalmi. Pri pokuse o jej prekonanie zahynuli stovky ľudí.',
+ 'výjazdná doložka':'Povolenie štátu na cestu do zahraničia, hlavne na Západ. Bez neho človek nesmel vycestovať. Štát ho mohol odmietnuť bez udania dôvodu.',
+ 'disident':'Človek, ktorý verejne nesúhlasil s režimom. Mohol za to prísť o prácu, byť sledovaný alebo väznený. Napríklad Václav Havel, Ján Čarnogurský či Miroslav Kusý.',
+ 'Charta 77':'Vyhlásenie z januára 1977, ktoré žiadalo, aby štát dodržiaval ľudské práva, ku ktorým sa sám zaviazal. Signatárov režim prenasledoval.',
+ 'sviečková manifestácia':'Pokojné zhromaždenie veriacich 25. marca 1988 v Bratislave. Ľudia so sviečkami žiadali náboženskú slobodu a dodržiavanie ľudských práv. Polícia ich rozháňala vodnými delami.',
+ 'nenásilie':'Spôsob boja bez zbraní: protesty, štrajky, odmietnutie poslušnosti. V novembri 1989 sa heslom stalo „Nechceme násilie“.',
+ 'generálny štrajk':'Keď sa do štrajku naraz zapoja pracujúci naprieč celou krajinou. 27. novembra 1989 od 12.00 do 14.00 tak ľudia ukázali, že stoja za študentmi a žiadajú koniec vlády jednej strany.',
+ 'Verejnosť proti násiliu':'Občianske hnutie, ktoré vzniklo 19. novembra 1989 v Bratislave. Na Slovensku viedlo nežnú revolúciu, v Čechách to bolo Občianske fórum.',
+ 'piliere moci':'Myšlienka politológa Gena Sharpa: každá moc stojí na ľuďoch, ktorí ju poslúchajú (vojaci, úradníci, robotníci, médiá…). Keď prestanú, moc sa zrúti.',
+ 'sloboda prejavu':'Právo vyjadriť svoj názor slovom, písmom, obrazom. V Ústave SR je v článku 26. Zákon ju môže obmedziť len vtedy, keď treba chrániť práva iných, bezpečnosť štátu, verejný poriadok, verejné zdravie alebo mravnosť.',
+ 'ohováranie':'Šírenie nepravdivého údaja o niekom. Trestným činom (§ 373 Trestného zákona) je vtedy, keď je údaj spôsobilý značnou mierou ohroziť jeho vážnosť u spoluobčanov, poškodiť ho v zamestnaní, v rodine alebo mu spôsobiť inú vážnu ujmu. Nie každá klebeta je trestný čin, ale každá môže ublížiť.',
+ 'nezávislé súdy':'Súdy, do ktorých rozhodovania nesmie zasahovať vláda ani nikto iný. Sudca rozhoduje iba podľa zákona a svedomia.',
+ 'slobodné médiá':'Noviny, rádiá, televízie a weby, ktoré môžu kritizovať aj vládu bez strachu. Často odhalia, čo by mocní radšej zatajili.',
+ 'ombudsman':'Verejný ochranca práv. Nezávislý orgán, ktorý chráni základné práva a slobody ľudí voči orgánom verejnej správy (úradom) v rozsahu, ktorý určuje ústava a zákon. Obrátiť sa naň môže každý. Nerozhoduje ako súd, ale prešetrí podnet a môže žiadať nápravu.',
+ 'občianska spoločnosť':'Spolky, iniciatívy, petície, dobrovoľníci, žiacke rady. Ľudia, ktorí sa starajú o veci verejné aj medzi voľbami.',
+ 'dezinformácia':'Zámerne nepravdivá alebo zavádzajúca informácia, ktorá má ľudí zmiasť, vystrašiť alebo pohádať.'
+};
+
+// ===== SVG ilustrácie (ručne kreslené v kóde) =====
+const ART = {};
+// avatary: siluety ako fotky zo spisu
+const avBase=(c,id,lab,body)=>`<svg viewBox="0 0 64 64"><defs><linearGradient id="g${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c}" stop-opacity=".35"/><stop offset="1" stop-color="#0b0b0d"/></linearGradient><pattern id="s${id}" width="3" height="3" patternUnits="userSpaceOnUse"><rect width="3" height="1" fill="#000" opacity=".35"/></pattern></defs>
+ <rect width="64" height="64" fill="#0b0b0d"/><rect width="64" height="64" fill="url(#g${id})"/>${body}<rect width="64" height="64" fill="url(#s${id})"/>
+ <text x="5" y="10" font-family="JetBrains Mono,monospace" font-size="6.5" font-weight="700" fill="${c}" letter-spacing=".5">${lab}</text></svg>`;
+ART.ema = () => avBase('#d4ff3a','e','EMA·1989',`<circle cx="32" cy="17" r="7" fill="#d4ff3a"/><ellipse cx="32" cy="31" rx="12" ry="13.5" fill="#d4ff3a"/><path d="M8 64q2-20 24-20t24 20z" fill="#d4ff3a"/>
+ <g fill="none" stroke="#0b0b0d" stroke-width="1.8"><circle cx="27" cy="31" r="3.6"/><circle cx="37" cy="31" r="3.6"/><path d="M30.6 31h2.8"/></g>
+ <g transform="translate(47 52) rotate(-30)" stroke="#0b0b0d" stroke-width="2.4" fill="none"><circle r="3.6"/><path d="M3.6 0h8M9 0v3M11.6 0v2.4"/></g>`);
+ART.lea = () => avBase('#ff5a36','l','LEA·PRESS',`<path d="M18 40q-3-26 14-26t14 26z" fill="#ff5a36"/><ellipse cx="32" cy="31" rx="10.5" ry="13" fill="#ff5a36"/><path d="M20 27q8-11 24-1v-6H20z" fill="#ff5a36"/><path d="M8 64q2-20 24-20t24 20z" fill="#ff5a36"/>
+ <path d="M28 46l4 9 4-9" fill="#0b0b0d"/><rect x="45" y="40" width="7" height="12" rx="3.5" fill="#0b0b0d" transform="rotate(-20 48 46)"/>`);
+ART.hana = () => avBase('#a08cff','h','ÚSTAVNÝ SÚD',`<path d="M19 36q-2-24 13-24t13 24z" fill="#a08cff"/><ellipse cx="32" cy="31" rx="10.5" ry="13" fill="#a08cff"/><path d="M6 64q2-20 26-20t26 20z" fill="#a08cff"/>
+ <path d="M24 45l8 8 8-8-2 7-6 3-6-3z" fill="#0b0b0d"/><g fill="#0b0b0d"><rect x="43" y="52" width="13" height="3.5" rx="1"/><rect x="47.5" y="45" width="4" height="8"/></g>`);
+ART.key = (c='#141414') => `<svg viewBox="0 0 100 100"><g fill="none" stroke="${c}" stroke-width="7" stroke-linecap="round"><circle cx="32" cy="50" r="16"/><path d="M48 50h40M78 50v12M88 50v9M68 50v8"/></g><circle cx="32" cy="50" r="5" fill="${c}"/></svg>`;
+
+// ostrov s ľuďmi
+ART.island = (n) => {
+  let seed=n*13+5; const R=()=>{seed=(seed*9301+49297)%233280;return seed/233280};
+  const A='var(--acc)';
+  let s = `<svg viewBox="0 0 600 300" preserveAspectRatio="xMidYMid slice"><style>.pp{animation:pp 2.2s ease-in-out infinite}@keyframes pp{50%{opacity:.35}}.sw{transform-origin:300px 160px;animation:sw 5s linear infinite}@keyframes sw{to{transform:rotate(360deg)}}.pop{animation:pop .5s cubic-bezier(.3,1.7,.5,1) both}@keyframes pop{from{transform:scale(0)}}</style>
+  <defs><radialGradient id="rg"><stop offset="0" stop-color="${A}" stop-opacity=".35"/><stop offset="1" stop-color="${A}" stop-opacity="0"/></radialGradient></defs>
+  <rect width="600" height="300" fill="#06100e"/>`;
+  for(let x=0;x<=600;x+=40) s+=`<path d="M${x} 0V300" stroke="#fff" stroke-opacity=".05"/>`;
+  for(let y=0;y<=300;y+=40) s+=`<path d="M0 ${y}H600" stroke="#fff" stroke-opacity=".05"/>`;
+  for(let k=0;k<6;k++){ const rx=250-k*38, ry=95-k*15; let d='';
+    for(let a=0;a<=64;a++){ const t=a/64*Math.PI*2, w=1+Math.sin(t*3+k)*.06+Math.cos(t*5)*.04; d+=(a?'L':'M')+(300+Math.cos(t)*rx*w).toFixed(1)+' '+(160+Math.sin(t)*ry*w).toFixed(1); }
+    s+=`<path d="${d}Z" fill="${k===0?'rgba(255,255,255,.03)':'none'}" stroke="${A}" stroke-opacity="${.18+k*.08}" stroke-width="1.3"/>`; }
+  s+=`<g class="sw"><path d="M300 160L560 160A260 260 0 0 0 525 30Z" fill="url(#rg)" opacity=".6"/></g>
+  <text x="14" y="22" font-family="JetBrains Mono,monospace" font-size="12" fill="${A}" opacity=".8">OSTROV · 17°11′ S · 89°17′ V</text>
+  <text x="586" y="290" text-anchor="end" font-family="JetBrains Mono,monospace" font-size="12" fill="#fff" opacity=".5">OBYVATELIA: ${n}</text>`;
+  for (let i=0;i<Math.min(n,100);i++){
+    const a=R()*Math.PI*2, rr=Math.sqrt(R())*.9, x=300+Math.cos(a)*230*rr, y=160+Math.sin(a)*80*rr, r=n>30?3:n>8?4.5:6;
+    s+=`<g class="pop" style="transform-origin:${x.toFixed(0)}px ${y.toFixed(0)}px;animation-delay:${(i*.012).toFixed(2)}s"><circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${r*2.6}" fill="${A}" opacity=".15" class="pp" style="animation-delay:${(R()*2).toFixed(2)}s"/><circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${r}" fill="${A}"/></g>`;
+  }
+  return s + `</svg>`;
+};
+
+// budova moci s piliermi
+ART.temple = (gone, fallen) => {
+  const P = PILLARS;
+  let tilt = gone.length*2.5; if (fallen) tilt=0;
+  let s = `<svg viewBox="0 0 600 330"><rect width="600" height="330" fill="none"/>
+  <rect x="40" y="290" width="520" height="22" fill="currentColor" opacity=".85"/>`;
+  if (!fallen){
+    s += `<g style="transition:transform .6s;transform-origin:300px 90px;transform:rotate(${gone.length%2?tilt:-tilt}deg) translateY(${gone.length*4}px)">
+    <path d="M300 18L560 86H40z" fill="#ff3b2f" stroke="#ff3b2f" stroke-width="3" style="filter:drop-shadow(0 0 14px #ff3b2f)"/>
+    <rect x="50" y="86" width="500" height="20" fill="currentColor"/>
+    <text x="300" y="70" text-anchor="middle" font-family="JetBrains Mono,monospace" font-weight="800" font-size="20" fill="#fff" letter-spacing="4">MOC STRANY</text></g>`;
+  } else {
+    s += `<g transform="translate(0 150) rotate(9 300 100)"><path d="M300 18L560 86H40z" fill="#ff3b2f" opacity=".6"/>
+    <rect x="50" y="86" width="500" height="20" fill="currentColor"/><text x="300" y="70" text-anchor="middle" font-family="JetBrains Mono,monospace" font-weight="800" font-size="20" fill="#fff" letter-spacing="4">MOC STRANY</text></g>`;
+  }
+  P.forEach((p,i)=>{
+    const x=62+i*82, g=gone.includes(p.id);
+    s += g ? `<g opacity=".55"><rect x="${x}" y="268" width="60" height="22" rx="3" fill="currentColor" transform="rotate(${i%2?8:-8} ${x+30} 280)"/></g>`
+           : `<g><rect x="${x}" y="108" width="60" height="182" fill="rgba(255,255,255,.04)" stroke="var(--acc)" stroke-width="2" style="filter:drop-shadow(0 0 6px var(--acc))"/><rect x="${x+8}" y="108" width="6" height="182" fill="currentColor" opacity=".15"/>
+              <text x="${x+30}" y="200" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor" transform="rotate(-90 ${x+30} 200)">${p.short}</text></g>`;
+  });
+  return s + `</svg>`;
+};
+
+const ICON = {
+  book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"/></svg>',
+  on:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 8a5 5 0 0 1 0 8M19 5a9 9 0 0 1 0 14"/></svg>',
+  off:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 5l-7 7 7 7"/></svg>',
+  speak:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg>'
+};
+const LOGO = `<svg width="34" height="34" viewBox="0 0 40 40"><rect x="1.5" y="1.5" width="37" height="37" rx="11" fill="none" stroke="currentColor" stroke-width="2.5"/><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="14" cy="20" r="5.5"/><path d="M19.5 20H32M28 20v4M32 20v3"/></g></svg>`;
+
+// ===== POMOCNÍCI =====
+const $ = (s, r=document) => r.querySelector(s);
+function el(tag, attrs={}, ...kids){
+  const e = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs||{})){
+    if (v==null || v===false) continue;
+    if (k==='class') e.className=v;
+    else if (k==='html') e.innerHTML=rich(String(v));
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v===true?'':v);
+  }
+  for (const c of kids.flat()){ if (c==null||c===false) continue; e.append(c.nodeType?c:document.createTextNode(c)); }
+  return e;
+}
+const rnd = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().trim();
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+// slovenské skloňovanie: plural(n,'chyba','chyby','chýb')
+const plural = (n,a,b,c) => n===1?a:(n>=2&&n<=4?b:c);
+const fmt = n => n.toLocaleString('sk-SK');
+
+// rich text: [[pojem]] alebo [[pojem|tvar]]
+function rich(t){
+  return t.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g,(m,k,f)=>`<button class="term" data-t="${k}">${f||k}</button>`);
+}
+
+// ===== ZVUK =====
+let AC=null;
+function ac(){ if(!AC){ try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){} } if(AC&&AC.state==='suspended') AC.resume(); return AC; }
+function tone(f, d=.12, type='sine', v=.12, t0=0){
+  if (!S.sound) return; const a=ac(); if(!a) return;
+  const o=a.createOscillator(), g=a.createGain(); o.type=type; o.frequency.value=f;
+  const t=a.currentTime+t0; g.gain.setValueAtTime(v,t); g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  o.connect(g).connect(a.destination); o.start(t); o.stop(t+d+.02);
+}
+function beep(ok){ if(ok){tone(660,.1,'triangle');tone(990,.16,'triangle',.12,.09);} else {tone(180,.22,'sawtooth',.08);} }
+function jingle(n=6){ for(let i=0;i<n;i++) tone(2400+Math.random()*4200, .08+Math.random()*.12, 'triangle', .05, Math.random()*.18); }
+function thud(){ tone(70,.5,'sine',.3); tone(110,.3,'square',.05); }
+
+// ===== ČÍTANIE NAHLAS =====
+function say(text){
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g,(m,k,f)=>f||k));
+    u.lang='sk-SK'; u.rate=.98;
+    const v=speechSynthesis.getVoices().find(v=>v.lang&&v.lang.toLowerCase().startsWith('sk')); if(v) u.voice=v;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+// ===== PEČIATKY (farebné aj v sivom režime) =====
+function stamp(text, opt={}){
+  const L=$('#stampLayer'); const s=el('div',{class:'stamp'}); s.innerHTML=text;
+  s.style.left=(opt.x??rnd(10,45))+'%'; s.style.top=(opt.y??rnd(25,60))+'%';
+  if (opt.color){ s.style.borderColor=opt.color; s.style.color=opt.color; }
+  L.append(s); thud();
+  setTimeout(()=>{s.style.transition='opacity .8s';s.style.opacity=0;}, opt.keep||2200);
+  setTimeout(()=>s.remove(), (opt.keep||2200)+900);
+}
+
+// ===== SPÄTNÁ VÄZBA =====
+function fb(box, msg, ok){
+  box.className='fb '+(ok?'ok':'bad'); box.setAttribute('role','status'); box.setAttribute('aria-live','polite'); box.innerHTML=(ok?'✔ ':'✘ ')+msg;
+  if(!ok){ box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); }
+  else if(typeof burstAt==='function') burstAt(box,18);
+  beep(ok);
+}
+function why(html){ return el('div',{class:'why',html:rich(html)}); }
+function fact(k, html){ return el('div',{class:'fact'}, el('div',{class:'k'},k), el('div',{html:rich(html)})); }
+
+// ===== MC: otázka s možnosťami (o[0] je správna, ak nie je uvedené ok) =====
+// opts: [{t, ok, why}]
+function mc(box, q, opts, cb, {retry=true}={}){
+  const wrap=el('div'); box.append(wrap);
+  wrap.append(el('h3',{html:rich(q)}));
+  const list=el('div',{class:'opts'}), f=el('div',{class:'fb'}), expl=el('div');
+  let errs=0, done=false;
+  const sh=shuffle(opts);
+  sh.forEach(o=>{
+    const b=el('button',{class:'opt',onclick:()=>{
+      if(done) return;
+      if(o.ok){ done=true; b.classList.add('ok'); fb(f,'Správne.',true); if(o.why) expl.replaceChildren(why(o.why)); [...list.children].forEach(x=>x.disabled=true); cb&&cb(errs===0, errs); }
+      else { errs++; b.classList.add('bad'); b.disabled=true; fb(f, o.why||'Ešte raz. Premýšľaj, koho to chráni.', false);
+        if(!retry){ done=true; const c=[...list.children][sh.findIndex(x=>x.ok)]; c.classList.add('ok'); cb&&cb(false,errs); }
+        else if(errs>=3||list.querySelectorAll('.opt:not([disabled])').length===1){ const c=[...list.children][sh.findIndex(x=>x.ok)]; c.classList.add('ok'); done=true; expl.replaceChildren(why('Správna odpoveď je zvýraznená. '+(sh.find(x=>x.ok).why||''))); cb&&cb(false,errs); } }
+    }},el('span',{html:rich(o.t)}));
+    list.append(b);
+  });
+  wrap.append(list,f,expl);
+  return wrap;
+}
+
+// ===== TRIEDIČ KARTIČIEK (pri 2 košoch sa dá ťahať doľava/doprava) =====
+function sorter(box, items, bins, cb){
+  const w=el('div',{class:'sorter'}); box.append(w);
+  const two=bins.length===2;
+  const cnt=el('div',{class:'cnt'}), stage=el('div',{class:'stage'}), card=el('div',{class:'card1'}), f=el('div',{class:'fb'}), ex=el('div');
+  const hL=el('div',{class:'hintL'},'← '+bins[0]), hR=two?el('div',{class:'hintR'},bins[1]+' →'):null;
+  stage.append(el('div',{class:'ghostc'}),card); if(two) card.append(hL,hR);
+  const txt=el('div'); card.append(txt);
+  const bw=el('div',{class:'bins'+(bins.length===3?' b3':'')});
+  let i=0, errs=0, busy=false;
+  const show=()=>{ cnt.replaceChildren(el('span',{},`${i+1} / ${items.length}`), el('span',{},`${errs} ${plural(errs,'chyba','chyby','chýb')}${two?' · potiahni kartu':''}`)); txt.innerHTML=rich(items[i].t); f.className='fb'; f.textContent=''; ex.replaceChildren();
+    card.style.transition='none'; card.style.transform='translateY(30px) scale(.94)'; card.style.opacity=0; void card.offsetWidth; card.style.transition=''; card.style.transform='none'; card.style.opacity=1; hL.style.opacity=0; if(hR) hR.style.opacity=0; };
+  const choose=(bi)=>{
+    if(i>=items.length||busy) return; busy=true;
+    const it=items[i], ok=it.c===bi;
+    if(ok) fb(f,'Áno, správne.',true); else { errs++; fb(f,`Patrí to do: <b>${bins[it.c]}</b>.`,false); }
+    hL.style.opacity=0; if(hR) hR.style.opacity=0;
+    card.classList.remove('drag'); card.style.transform='none'; card.style.opacity=1;
+    card.classList.add(ok?'right':'wrong'); stage.classList.add('open');
+    i++;
+    const adv=()=>{ busy=false; card.classList.remove('right','wrong'); stage.classList.remove('open'); if(i<items.length) show(); else { txt.innerHTML='Hotovo!'; card.style.transition='none'; card.style.transform='none'; card.style.opacity=1; f.className='fb'; f.textContent=''; cnt.replaceChildren(el('span',{},`${items.length} kartičiek`),el('span',{},`${errs} ${plural(errs,'chyba','chyby','chýb')}`)); cb(errs); } };
+    const nb=el('button',{class:'btn sm',onclick:()=>{ nb.disabled=true; const dir=bins.length===3?(bi-1):(bi===0?-1:1); card.style.transform=`translate(${dir*120}%,0) rotate(${dir*14}deg)`; card.style.opacity=0; setTimeout(adv,320); }}, i<items.length?(ok?'Ďalšia kartička →':'Rozumiem, ďalšia →'):(ok?'Dokončiť':'Rozumiem, dokončiť'));
+    txt.append(el('div',{class:'verdict'}, el('b',{class:ok?'okc':'badc'}, ok?'✔ Správne':'✘ Patrí to do: '+bins[it.c]), el('div',{html:rich((ok?it.ok:it.why)||it.why||it.ok||'')}), nb));
+    setTimeout(()=>{ nb.focus({preventScroll:true}); const r=card.getBoundingClientRect(); if(r.bottom>innerHeight) card.scrollIntoView({block:'nearest',behavior:'smooth'}); },60);
+  };
+  if(two){
+    let sx=null, dx=0;
+    card.addEventListener('pointerdown',e=>{ if(i>=items.length||busy||e.target.closest('button')) return; sx=e.clientX; dx=0; card.classList.add('drag'); card.setPointerCapture(e.pointerId); });
+    card.addEventListener('pointermove',e=>{ if(sx==null) return; dx=e.clientX-sx; card.style.transform=`translateX(${dx}px) rotate(${dx/14}deg)`; hL.style.opacity=Math.max(0,-dx/90); hR.style.opacity=Math.max(0,dx/90); });
+    const up=()=>{ if(sx==null) return; card.classList.remove('drag'); sx=null; if(Math.abs(dx)>90) choose(dx<0?0:1); else { card.style.transform='none'; hL.style.opacity=0; hR.style.opacity=0; } };
+    card.addEventListener('pointerup',up); card.addEventListener('pointercancel',up);
+  }
+  bins.forEach((b,bi)=>bw.append(el('button',{class:'bin',onclick:()=>choose(bi)},b)));
+  w.append(cnt,stage,bw,f,ex); show();
+}
+
+// ===== PORADIE (dlaždice so šípkami) =====
+function orderer(box, items, cb){
+  // items v správnom poradí: [{t, d}]
+  let cur=shuffle(items.map((x,i)=>({...x,i}))); while(cur.every((x,i)=>x.i===i)) cur=shuffle(cur);
+  const list=el('div',{class:'tilesrow'}), f=el('div',{class:'fb'}); let errs=0;
+  const draw=(reveal)=>{ list.replaceChildren(...cur.map((x,k)=>el('div',{class:'tile'},
+    el('span',{class:'yr'}, reveal?x.d:'?'), el('span',{},x.t),
+    reveal?null:el('span',{class:'mv'}, el('button',{'aria-label':'Posunúť vyššie',onclick:()=>{if(k>0){[cur[k-1],cur[k]]=[cur[k],cur[k-1]];draw();}}},'↑'), el('button',{'aria-label':'Posunúť nižšie',onclick:()=>{if(k<cur.length-1){[cur[k+1],cur[k]]=[cur[k],cur[k+1]];draw();}}},'↓'))))); };
+  draw();
+  const chk=el('button',{class:'btn',onclick:()=>{
+    const good=cur.filter((x,k)=>x.i===k).length;
+    if(good===cur.length){ fb(f,'Presne tak. Tu sú dátumy.',true); draw(true); chk.remove(); sol.remove(); cb(errs); }
+    else { errs++; fb(f,`Na správnom mieste: ${good} z ${cur.length}. Skús to ešte poprehadzovať.`,false); if(errs>=3) sol.classList.remove('hidden'); }
+  }},'Skontrolovať poradie');
+  const sol=el('button',{class:'btn ghost hidden',onclick:()=>{cur=[...cur].sort((a,b)=>a.i-b.i); draw(true); chk.remove(); sol.remove(); fb(f,'Toto je správne poradie.',true); cb(errs);}},'Ukáž riešenie');
+  box.append(list, el('div',{class:'row',style:'margin-top:12px'},chk,sol), f);
+}
+
+// ===== EFEKTY A POHYB =====
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const accent = () => getComputedStyle(document.body).getPropertyValue('--acc').trim() || '#d4ff3a';
+
+// kreslenie kľúča na canvas
+function drawKey(c, s){
+  c.beginPath(); c.arc(0,0,s*.32,0,Math.PI*2); c.moveTo(s*.32,0); c.lineTo(s*1.1,0);
+  c.moveTo(s*.85,0); c.lineTo(s*.85,s*.26); c.moveTo(s*1.06,0); c.lineTo(s*1.06,s*.2); c.stroke();
+}
+
+// --- pole kľúčov v hero (uhýbajú prstu / myši) ---
+let KF=null;
+function keyField(cv){
+  if(KF){ KF.stop(); KF=null; }
+  const c=cv.getContext('2d'); let W,H,dpr, P=[], mx=-999, my=-999, run=true, raf;
+  const size=()=>{ dpr=Math.min(2,devicePixelRatio||1); W=cv.clientWidth; H=cv.clientHeight; cv.width=W*dpr; cv.height=H*dpr; c.setTransform(dpr,0,0,dpr,0,0);
+    const n=Math.round(Math.min(260, W*H/2600)); P=Array.from({length:n},()=>mk(true)); };
+  const mk=(any)=>({x:Math.random()*W, y:any?Math.random()*H:H+20, s:6+Math.random()*16, a:Math.random()*6.28, va:(Math.random()-.5)*.02, vy:-(.15+Math.random()*.5), vx:0, g:Math.random(), hot:0});
+  const mv=e=>{ const r=cv.getBoundingClientRect(); const p=e.touches?e.touches[0]:e; mx=p.clientX-r.left; my=p.clientY-r.top; };
+  const lv=()=>{ mx=my=-999; };
+  const par=cv.parentElement; par.addEventListener('pointermove',mv); par.addEventListener('pointerdown',e=>{ mv(e); P.forEach(p=>{ const dx=p.x-mx, dy=p.y-my, d=Math.max(.001,Math.hypot(dx,dy)); if(d<180){ p.vx+=dx/d*6; p.vy+=dy/d*6; p.hot=1; } }); jingle(10); });
+  par.addEventListener('pointerleave',lv);
+  const acc=accent();
+  const tick=t=>{
+    if(!run) return;
+    c.clearRect(0,0,W,H);
+    for(const p of P){
+      const dx=p.x-mx, dy=p.y-my, d=Math.max(.001,Math.hypot(dx,dy));
+      if(d<120){ const f=(120-d)/120; p.vx+=dx/d*f*1.4; p.vy+=dy/d*f*1.4; p.hot=Math.max(p.hot,f); }
+      p.vx*=.94; p.vy=p.vy*.94+(-(.15+p.g*.5))*.06; p.x+=p.vx; p.y+=p.vy; p.a+=p.va+p.vx*.01; p.hot*=.97;
+      if(p.y<-30||p.x<-40||p.x>W+40){ Object.assign(p,mk(false)); p.x=Math.random()*W; }
+      const tw=.25+.75*Math.abs(Math.sin(t/900+p.g*20));
+      c.save(); c.translate(p.x,p.y); c.rotate(p.a); c.lineWidth=Math.max(1.4,p.s*.13); c.lineCap='round';
+      c.globalAlpha=Math.min(1,(.12+p.s/40)*tw+p.hot);
+      c.strokeStyle=p.hot>.2?acc:(p.g>.85?'#ffe14a':'#f2efe8');
+      if(p.hot>.2){ c.shadowColor=acc; c.shadowBlur=14; }
+      drawKey(c,p.s); c.restore();
+    }
+    raf=requestAnimationFrame(tick);
+  };
+  const io=new IntersectionObserver(([e])=>{ const v=e.isIntersecting; if(v&&!run){ run=true; raf=requestAnimationFrame(tick);} else if(!v){ run=false; cancelAnimationFrame(raf);} });
+  size(); io.observe(cv); addEventListener('resize',size);
+  if(RM){ run=false; tick(0); } else raf=requestAnimationFrame(tick);
+  KF={stop(){ run=false; cancelAnimationFrame(raf); io.disconnect(); removeEventListener('resize',size); }};
+}
+
+// --- globálne častice (výbuch, dážď kľúčov) ---
+const FX={P:[],on:false};
+function fxLoop(){
+  const cv=$('#fxc'); if(!cv) return; const c=cv.getContext('2d');
+  const dpr=Math.min(2,devicePixelRatio||1);
+  if(cv.width!==innerWidth*dpr){ cv.width=innerWidth*dpr; cv.height=innerHeight*dpr; }
+  c.setTransform(dpr,0,0,dpr,0,0); c.clearRect(0,0,innerWidth,innerHeight);
+  FX.P=FX.P.filter(p=>p.life>0);
+  for(const p of FX.P){
+    p.vy+=p.g; p.vx*=.99; p.x+=p.vx; p.y+=p.vy; p.a+=p.va; p.life-=p.k;
+    c.save(); c.globalAlpha=Math.max(0,Math.min(1,p.life)); c.translate(p.x,p.y); c.rotate(p.a);
+    c.strokeStyle=c.fillStyle=p.col; c.lineWidth=p.key?Math.max(1.6,p.s*.14):1; c.lineCap='round';
+    if(p.key) drawKey(c,p.s); else c.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);
+    c.restore();
+  }
+  if(FX.P.length) requestAnimationFrame(fxLoop); else { FX.on=false; c.clearRect(0,0,innerWidth,innerHeight); }
+}
+function fxStart(){ if(!FX.on){ FX.on=true; requestAnimationFrame(fxLoop); } }
+function burst(x,y,n=22,cols){
+  if(RM) return; cols=cols||[accent(),'#f2efe8','#ffe14a'];
+  for(let i=0;i<n;i++){ const a=Math.random()*6.28, v=2+Math.random()*6;
+    FX.P.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-2,g:.18,a:Math.random()*6,va:(Math.random()-.5)*.3,s:4+Math.random()*6,life:1,k:.018+Math.random()*.012,col:pick(cols),key:Math.random()<.3}); }
+  fxStart();
+}
+function burstAt(elm,n){ if(!elm) return; const r=elm.getBoundingClientRect(); burst(r.left+Math.min(r.width,160)/2, r.top+r.height/2, n); }
+function keyRain(n=140){
+  if(RM) return; const cols=[accent(),'#ffe14a','#f2efe8','#ff3b2f'];
+  for(let i=0;i<n;i++) FX.P.push({x:Math.random()*innerWidth,y:-20-Math.random()*innerHeight*.8,vx:(Math.random()-.5)*2,vy:1+Math.random()*3,g:.06,a:Math.random()*6,va:(Math.random()-.5)*.12,s:10+Math.random()*16,life:1.6,k:.004+Math.random()*.003,col:pick(cols),key:true});
+  fxStart();
+}
+// farba sa rozleje z bodu
+async function flood(x,y){
+  const f=$('#flood'); if(!f||RM) return;
+  f.style.transition='none'; f.style.opacity=1; f.style.clipPath=`circle(0px at ${x}px ${y}px)`; void f.offsetWidth;
+  f.style.transition='clip-path .9s cubic-bezier(.7,0,.3,1)'; f.style.clipPath=`circle(150% at ${x}px ${y}px)`;
+  await sleep(950); f.style.transition='opacity .7s'; f.style.opacity=0; await sleep(700); f.style.clipPath='circle(0 at 50% 50%)';
+}
+
+// --- naklonenie kariet a žiara pod kurzorom ---
+function tilt(root){
+  if(RM) return;
+  root.querySelectorAll('.file').forEach(f=>{
+    f.addEventListener('pointermove',e=>{ if(e.pointerType!=='mouse') return; const r=f.getBoundingClientRect(), x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height;
+      f.style.setProperty('--mx',x*100+'%'); f.style.setProperty('--my',y*100+'%'); f.style.setProperty('--rx',((.5-y)*6).toFixed(2)+'deg'); f.style.setProperty('--ry',((x-.5)*8).toFixed(2)+'deg'); });
+    f.addEventListener('pointerleave',()=>{ f.style.setProperty('--rx','0deg'); f.style.setProperty('--ry','0deg'); });
+  });
+}
+// --- objavovanie pri skrolovaní ---
+function reveals(root){
+  const els=root.querySelectorAll('[data-r]');
+  if(RM||!('IntersectionObserver' in window)){ els.forEach(e=>e.classList.add('in')); return; }
+  const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} }),{threshold:.12});
+  els.forEach((e,i)=>{ e.style.transitionDelay=(Math.min(i%4,3)*.08)+'s'; io.observe(e); });
+}
+// --- rotujúce slová (písací stroj) ---
+let ROT=null;
+function rotator(elm, words){
+  clearTimeout(ROT); let wi=0, ci=0, del=false;
+  const step=()=>{ if(!elm.isConnected) return; const w=words[wi];
+    if(!del){ ci++; if(ci>w.length){ del=true; ROT=setTimeout(step,1700); return; } }
+    else { ci--; if(ci===0){ del=false; wi=(wi+1)%words.length; } }
+    elm.innerHTML=`<span class="w">${w.slice(0,ci)}</span><span class="cur"></span>`;
+    ROT=setTimeout(step, del?28:60); };
+  if(RM){ elm.innerHTML=`<span class="w">${words[0]}</span>`; return; }
+  step();
+}
+// --- HUD kamery v experimente ---
+let HUDT=null;
+function hud(on){
+  const h=$('#hud'); if(!h) return; clearInterval(HUDT);
+  if(on){ const t0=Date.now(), d=new Date(1986,4,23,8,17,0);
+    const pad=n=>String(n).padStart(2,'0');
+    const upd=()=>{ const s=Math.floor((Date.now()-t0)/1000)+d.getSeconds(); const tt=new Date(d.getTime()+s*1000);
+      h.querySelector('.tc').textContent=`${pad(tt.getDate())}.${pad(tt.getMonth()+1)}.${tt.getFullYear()} ${pad(tt.getHours())}:${pad(tt.getMinutes())}:${pad(tt.getSeconds())}`; };
+    upd(); HUDT=setInterval(upd,1000); }
+}
+
+// ===== ÚLOHY =====
+const T = {};
+const N = l => ({obcan:0, volic:1, sudca:2})[l];
+
+// ---------- SPIS 01 ----------
+T.ostrov = {n:'Ostrov', run(box, done, lvl){
+  const stops=[1,2,5,20,100];
+  const C = {
+    1:{q:'Si na ostrove sám. Môžeš úplne všetko. Čo ti chýba?', o:[
+      {t:'Niekto, s kým by som sa rozprával, kto by mi pomohol, keď ochoriem.', ok:true, why:'Úplná sloboda osamote je aj úplná samota. Sloboda dostáva zmysel až medzi ľuďmi, a práve tam narazí na hranice.'},
+      {t:'Nič, takto je to dokonalé.', why:'Skús si predstaviť, že si zlomíš nohu. Kto ti prinesie vodu?'},
+      {t:'Pravidlá, ktoré by ma obmedzovali.', why:'Pravidlá osamote netreba, nemáš komu ublížiť. Ale chýba ti niečo iné.'}]},
+    2:{q:'Pripláva Tomi. Každú noc o tretej bubnuje. Nemôžeš spať. Čo urobíte?', o:[
+      {t:'Dohodnete sa: bubnovať áno, ale nie v noci.', ok:true, why:'Obaja si zachováte slobodu: Tomi bubnuje, ty spíš. Dobré pravidlo neberie slobodu, len ju rozdelí tak, aby ostala obom.'},
+      {t:'Tomi môže bubnovať, kedy chce. Je to jeho sloboda.', why:'Jeho bubnovanie berie tebe slobodu spať. Keď moja sloboda škodí druhému, už to nie je len moja vec.'},
+      {t:'Bubnovanie sa na ostrove zakáže navždy.', why:'To je zbytočne veľa. Problém je hluk v noci, nie bubny ako také. Zákaz navždy berie slobodu viac, než treba.'}]},
+    5:{q:'Ste piati. Na ostrove je jediný prameň pitnej vody. Rita ho ohradila plotom: „Našla som ho prvá, je môj.“', o:[
+      {t:'Prameň je spoločný. Dohodnete pravidlá, aby mal každý dosť vody.', ok:true, why:'Bez vody nemá nikto ani slobodu, ani život. Niektoré veci sú také dôležité, že sa o ne treba podeliť férovo.'},
+      {t:'Je jej, našla ho prvá. Ostatní si musia vodu kúpiť.', why:'Kto ovláda vodu, ovláda aj ľudí. Takto by Rita určovala, kto prežije, a o slobode ostatných by už nemohla byť reč.'},
+      {t:'Kto je najsilnejší, ten si prameň zoberie.', why:'To je právo silnejšieho. Slobodný by bol len jeden človek, a aj to len dovtedy, kým nepríde silnejší.'}]},
+    20:{q:'Je vás dvadsať. Niekto kradne kokosy zo spoločných zásob. Dav chce hneď potrestať Igora, lebo „vyzerá podozrivo“.', o:[
+      {t:'Najprv dôkazy. Igor sa môže brániť a o treste rozhodne niekto nestranný.', ok:true, why:'Tomu sa hovorí spravodlivý proces. Chráni nevinných pred hnevom davu. Raz by na rade mohol byť ktokoľvek, aj ty.'},
+      {t:'Potrestať Igora. Dav má väčšinou pravdu.', why:'Dav sa ľahko pomýli. Keby to nebol Igor, potrestali by nevinného a skutočný zlodej by kradol ďalej.'},
+      {t:'Nech si každý stráži svoje kokosy palicou.', why:'Potom sa ostrov zmení na tábor plný strachu. Nikto už nie je slobodný, všetci len strážia.'}]},
+    100:{q:'Je vás sto. Pri ohni sa už nedokážete dohodnúť. Niekto musí rozhodovať. Kto?', o:[
+      {t:'Zvolíte si zástupcov na obmedzený čas a môžete ich vymeniť.', ok:true, why:'Toto je jadro demokracie: moc je požičaná, nie darovaná. Kto ju zneužije, toho v ďalších voľbách vymeníte.'},
+      {t:'Najsilnejší sa vyhlási za kráľa navždy.', why:'A keď bude kráľ zlý, ako sa ho zbavíte? Len násilím. Demokracia vymýšľa, ako vymeniť vládu bez krvi.'},
+      {t:'Nikto. Nech si každý robí, čo chce.', why:'Pri sto ľuďoch to nefunguje. Vyhrávať by začal najsilnejší a najhlasnejší a ostatní by o slobodu prišli.'}]}
+  };
+  let at=0, maxOpen=0;
+  const pic=el('div',{class:'island',html:ART.island(1)});
+  const num=el('div',{class:'big-num'},'1');
+  const lab=el('div',{class:'mono',style:'font-size:13px;color:var(--muted)'},'ľudí na ostrove');
+  const rng=el('input',{type:'range',min:0,max:4,step:1,value:0,'aria-label':'Počet ľudí na ostrove'});
+  const qbox=el('div',{style:'margin-top:14px'});
+  const ask=()=>{
+    const n=stops[at]; qbox.replaceChildren();
+    mc(qbox, C[n].q, C[n].o, ()=>{
+      if(at===maxOpen && maxOpen<4){ maxOpen++; qbox.append(el('p',{class:'mono',style:'margin-top:10px'},'⛵ Na obzore je ďalšia loď. Posuň posuvník doprava.')); }
+      if(at===4){ qbox.append(fact('Čo si zistil(a)', lvl==='sudca'
+        ? 'Každé tvoje pravidlo malo rovnaký test: <b>chráni slobodu ostatných pred škodou?</b> To je Millov [[princíp škody]]. Pozor na dve spresnenia: 1. <b>Ujma nie je urážka ani nesúhlas.</b> To, že ma niečo pohoršuje, ešte nie je škoda. 2. <b>Ani skutočná škoda neospravedlní hocijaký zásah.</b> Pri bubnoch stačil nočný kľud, celoživotný zákaz by bol neprimeraný. Súdy tomu hovoria [[proporcionalita]].'
+        : 'Sloboda neznamená robiť čokoľvek. Znamená robiť, čo chcem, <b>kým tým neubližujem iným</b>. Dobré pravidlá slobodu neberú. Chránia ju pred silnejšími, pred davom a pred niekým, kto by chcel byť kráľom navždy.'));
+        done(); }
+    });
+  };
+  rng.addEventListener('input',()=>{ let v=+rng.value; if(v>maxOpen){ v=maxOpen; rng.value=v; } if(v!==at){ at=v; pic.innerHTML=ART.island(stops[at]); num.textContent=stops[at]; tone(300+at*120,.1,'triangle'); ask(); } });
+  box.append(el('p',{class:'instr'},'Posúvaj posuvník. Na ostrov budú pribúdať ľudia a ty pri každom spore rozhodneš, aké pravidlo platí.'),
+    pic, el('div',{class:'row',style:'margin-top:10px'}, num, lab), rng, qbox);
+  ask();
+}};
+
+T.hranica = {n:'Kde sa končí moja sloboda', run(box, done, lvl){
+  const A=[ // 0 = moja sloboda
+   ['Nosím zelené vlasy.','Nikomu tým neubližuješ. Môže sa to niekomu nepáčiť, ale „nepáči sa mi“ nie je škoda.'],
+   ['V autobuse počúvam hudbu v slúchadlách.','Hudbu počuješ len ty, nikoho neruší.'],
+   ['Na sieti napíšem, že sa mi nepáči nový zákon.','Kritika zákonov je jadro slobody prejavu.'],
+   ['Verím v Boha. Alebo neverím.','Sloboda svedomia a náboženstva. Ústava SR, článok 24.'],
+   ['V triede poviem názor, s ktorým nikto nesúhlasí.','Iný názor nikomu neškodí, aj keď je nepohodlný.'],
+   ['Kamarátim sa, s kým chcem.','Tvoje vzťahy sú tvoja vec.'],
+   ['Vstúpim do ekologického spolku.','Sloboda združovania. Ústava SR, článok 29.'],
+   ['Nosím tričko s obľúbenou kapelou.','Nikomu tým neubližuješ.'],
+   ['Rozhodnem sa, že nebudem jesť mäso.','Je to tvoje rozhodnutie o vlastnom tele.']];
+  const B=[ // 1 = obmedzujem druhých
+   ['V autobuse púšťam hudbu nahlas z reproduktora.','Tu už zasahuješ do pokoja všetkých okolo. Rovnaká hudba, iný dopad.'],
+   ['Zverejním fotku spolužiaka, aby sa mu ostatní smiali.','Zasahuješ do jeho súkromia a dôstojnosti. Ústava SR, článok 19.'],
+   ['Napíšem o susedovi vymyslenú klebetu, že kradne.','Nepravdivé obvinenie mu môže zničiť povesť aj prácu. Ak je spôsobilé spôsobiť mu vážnu ujmu, ide o trestný čin [[ohováranie|ohovárania]].'],
+   ['Prečítam si sestrin denník bez dovolenia.','Porušuješ jej súkromie.'],
+   ['Fajčím v triede.','Dym dýchajú aj ostatní. Škodíš ich zdraviu.'],
+   ['Zablokujem kamarátovi cestu a nepustím ho domov.','Berieš mu slobodu pohybu.'],
+   ['Vojdem bez dovolenia do cudzieho bytu.','Obydlie je nedotknuteľné. Ústava SR, článok 21.'],
+   ['Rýchlo jazdím na kolobežke po chodníku pomedzi ľudí.','Ohrozuješ ostatných.'],
+   ['Vysmievam sa spolužiakovi pre jeho prízvuk, kým sa nerozplače.','Toto je už šikanovanie, nie názor.']];
+  const n=[4,5,6][N(lvl)];
+  const items=shuffle([...shuffle(A).slice(0,n).map(x=>({t:x[0],c:0,ok:x[1],why:x[1]})), ...shuffle(B).slice(0,n).map(x=>({t:x[0],c:1,ok:x[1],why:x[1]}))]);
+  box.append(el('p',{class:'instr',html:'Pri každej situácii rozhodni: je to <b>moja sloboda</b>, alebo už <b>obmedzujem druhých</b>?'}));
+  sorter(box, items, ['Moja sloboda 🙂','Už obmedzujem druhých ⚠️'], errs=>{
+    box.append(why(errs<=2?'Výborne. Všimni si: často ide o <b>rovnakú vec</b> (hudba, kolobežka, názor), rozdiel je v tom, <b>či tým škodíš iným</b>.':'Viac chýb. Pomôže jednoduchý test: <b>Škodím tým niekomu? Beriem mu tým jeho slobodu?</b> Ak nie, je to tvoja sloboda, aj keď sa to niekomu nepáči.'));
+    done();
+  });
+}};
+
+T.negpos = {n:'Sloboda OD a sloboda NA', run(box, done){
+  const it=[
+   ['Štát mi nezakazuje cestovať do zahraničia.',0],['Mám dosť peňazí na lístok, takže naozaj môžem cestovať.',1],
+   ['Nikto ma nezatvorí za článok, ktorý napíšem.',0],['Naučili ma čítať a písať, preto článok vôbec môžem napísať.',1],
+   ['Polícia nesmie bez príkazu prehľadať môj byt.',0],['Škola je bezplatná, takže môžem študovať, aj keď sú rodičia chudobní.',1],
+   ['Cenzor mi neškrtá text.',0],['Bezbariérový vstup umožní vozíčkarovi ísť voliť.',1],
+   ['Nikto mi neprikazuje, akú cirkev mám navštevovať.',0],['V obci je knižnica, takže sa k informáciám dostanem aj bez internetu.',1]];
+  box.append(el('p',{class:'instr',html:'Filozof Isaiah Berlin rozlišoval dve slobody ([[sloboda od a sloboda na|vysvetlenie]]). <b>Negatívna sloboda (OD)</b>: nikto mi nebráni. <b>Pozitívna sloboda (NA)</b>: som pánom svojho života, môžem a dokážem o ňom rozhodovať. Toto triedenie je zjednodušená pomôcka, nie úplná Berlinova teória.'}));
+  sorter(box, shuffle(it).slice(0,8).map(x=>({t:x[0],c:x[1],why:x[1]?'Tu nejde o to, či mi niekto bráni, ale o to, či mám schopnosti a podmienky rozhodovať o sebe (vzdelanie, prostriedky, prístup).':'Ide o neprítomnosť zásahu: nikto (štát, polícia, cenzor) mi nebráni.'})), ['Sloboda OD','Sloboda NA'], ()=>{
+    box.append(why('Pozitívna sloboda nie je len o peniazoch či škole. Ide o <b>sebaurčenie</b>: byť autorom vlastného života. Berlin zároveň varoval, že v mene „pravej“ pozitívnej slobody niektoré režimy ľuďom diktovali, čo majú chcieť. Spor o to, ktorú slobodu zdôrazniť, je jadrom politiky a obidva postoje patria do demokracie. <b>Na diskusiu:</b> Je slobodný človek, ktorému nikto nebráni študovať, ale nemá na to peniaze?'));
+    done();
+  });
+}};
+
+// ---------- SPIS 02 ----------
+T.kai = {n:'Kaiova loďka', run(box, done, lvl){
+  const vote=el('div',{style:'font-size:34px;letter-spacing:4px;text-align:center;margin:8px 0'},'🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂');
+  box.append(el('p',{class:'instr',html:'Kai si sám postavil jedinú loďku na ostrove. Deväť ľudí navrhuje, aby mu ju vzali a používali ju všetci, bez jeho súhlasu a bez náhrady. Hlasuje sa.'}), vote);
+  const go=el('button',{class:'btn',onclick:async()=>{
+    go.remove(); const arr=[...'🙂'.repeat(10)].filter(x=>x.trim()); let s=[];
+    for(let i=0;i<10;i++){ s.push(i<9?'✋':'🙁'); vote.textContent=s.join('')+'🙂'.repeat(9-i); tone(400+i*40,.08,'triangle'); await sleep(170); }
+    vote.insertAdjacentHTML('afterend','<p class="mono" style="text-align:center">ZA: 9 · PROTI: 1 · NÁVRH PRIJATÝ</p>');
+    step1();
+  }},'Spustiť hlasovanie');
+  box.append(go);
+  const q=el('div'); box.append(q);
+  const step1=()=>mc(q,'Odhlasovali to 9 : 1. Je to v poriadku, lebo rozhodla väčšina?',[
+    {t:'Nie celkom. Demokracia musí chrániť aj práva menšiny, aj keď je to jediný človek.',ok:true,why:'Tomuto sa hovorí [[tyrania väčšiny]]. Keby stačilo mať väčšinu, mohla by väčšina odhlasovať čokoľvek: zobrať majetok, zakázať náboženstvo, vyhnať ľudí z ostrova.'},
+    {t:'Áno. Väčšina rozhodla, tak je to demokratické.',why:'Predstav si, že zajtra väčšina odhlasuje, že zoberie niečo tebe. Bolo by to spravodlivé len preto, že ich je viac?'},
+    {t:'Nie. Hlasovanie je vždy zlé.',why:'Hlasovanie je dobrý nástroj na rozhodovanie. Problém nastane, keď sa ním berú základné práva.'}],()=>{ q.append(el('div',{style:'height:14px'})); step2(); });
+  const step2=()=>mc(q,'Čo by Kaia ochránilo?',[
+    {t:'Pravidlo, ktoré sa nedá len tak odhlasovať: nikomu nemožno vziať majetok svojvoľne. Vyvlastnenie je možné iba v nevyhnutnej miere, vo verejnom záujme, na základe zákona a za primeranú náhradu.',ok:true,why:'Presne na to slúži [[ústava]] so zoznamom základných práv. V Ústave SR je to článok 20: vyvlastniť možno len v nevyhnutnej miere, vo verejnom záujme, na základe zákona a za primeranú náhradu.'},
+    {t:'Silnejší kamaráti.',why:'Potom by nerozhodovalo právo, ale sila. To je návrat k právu silnejšieho.'},
+    {t:'Nič. Väčšina má vždy pravdu.',why:'Väčšina sa v dejinách mnohokrát kruto mýlila. Preto majú ľudia práva, ktoré im väčšina nemôže len tak zobrať.'}],()=>{ if(lvl==='obcan'){ fin(); } else { q.append(el('div',{style:'height:14px'})); step3(); } });
+  const step3=()=>mc(q,'Kai tvrdí, že pravidlo porušili. Kto má spor rozhodnúť?',[
+    {t:'Nezávislý súd, ktorý neposlúcha ani väčšinu, ani vládu.',ok:true,why:'[[nezávislé súdy|Nezávislý súd]] je poistka pre slabšieho. Nemusí byť populárny, musí byť spravodlivý.'},
+    {t:'Väčšina, ešte jedným hlasovaním.',why:'Väčšina by rozhodovala vo vlastnej veci. Nikto nemá byť sudcom vo vlastnom spore.'},
+    {t:'Náčelník, ktorého zvolila väčšina.',why:'Náčelník je závislý od tých, čo ho zvolili. Kai by nemal šancu.'}],fin);
+  function fin(){ box.append(fact('Zapamätaj si','Jednoduchá pomôcka: demokracia = <b>vláda väčšiny + ochrana práv každého</b>.'+(lvl==='obcan'?' Bez toho druhého je to len hlasovanie silnejších.':' Úplnejší obraz: k demokracii patrí aj <b>slobodná súťaž viacerých politických síl</b>, <b>pokojná výmena moci</b> vo voľbách, <b>politická zodpovednosť</b> volených zástupcov a <b>právny štát</b>.'))); done(); }
+}};
+
+T.delba = {n:'Deľba moci', run(box, done, lvl){
+  const P=[['Schvaľuje zákony',0],['Schvaľuje štátny rozpočet',0],['Môže vysloviť vláde nedôveru, po ktorej ju odvolá prezident republiky',0],['Volia ju občania priamo vo voľbách (150 poslancov)',0],
+   ['Riadi ministerstvá a úrady',1],['Riadi políciu',1],['Stará sa, aby sa zákony vykonávali v praxi',1],['Rozhoduje, kde sa postaví nemocnica či diaľnica',1],
+   ['Rozhoduje, či niekto porušil zákon',2],['Rozhoduje spory medzi ľuďmi',2],['Posudzuje, či zákon neodporuje ústave',2],['Vynáša rozsudky',2]];
+  const n=[6,8,10][N(lvl)];
+  const pick3=[0,1,2].flatMap(c=>shuffle(P.filter(p=>p[1]===c)).slice(0,Math.ceil(n/3)));
+  box.append(el('p',{class:'instr',html:'Moc v demokratickom štáte má tri časti ([[deľba moci]]). Priraď, čo ktorá robí.'}));
+  sorter(box, shuffle(pick3).slice(0,n).map(p=>({t:p[0],c:p[1],why:['Zákonodarná moc = parlament (Národná rada SR). Schvaľuje zákony a kontroluje vládu.','Výkonná moc = vláda, ministerstvá a úrady (vrátane polície) a prezident. Vykonávajú zákony.','Súdna moc = všeobecné súdy rozhodujú spory a trestné veci, Ústavný súd vykonáva ústavné súdnictvo.'][p[1]]})),
+   ['Zákonodarná (parlament)','Výkonná (vláda)','Súdna (súdy)'], ()=>{
+    const ex=el('div',{style:'margin-top:16px'});
+    const pw=el('div',{class:'powers'}, ...['Zákonodarná|píše zákony','Výkonná|vládne','Súdna|súdi'].map(x=>el('div',{class:'pbox',style:'transition:all .8s'},el('h4',{},x.split('|')[0]),el('div',{},x.split('|')[1]))));
+    const b=el('button',{class:'btn red',onclick:async()=>{
+      b.remove(); [...pw.children].forEach((c,i)=>{c.style.transform=`translateX(${(1-i)*100}%) scale(.9)`; c.style.opacity=i===1?1:0;}); thud(); await sleep(900);
+      pw.replaceChildren(el('div',{class:'pbox one'},el('h4',{style:'font-size:40px'},'JEDEN VODCA'),el('div',{},'píše zákony · vládne · súdi')));
+      const steps=['Vodca napíše zákon: „Kritizovať vodcu je trestné.“','Vodcova polícia ťa zatkne za vtip.','Vodcov súd ťa odsúdi.','Komu sa odvoláš?'];
+      for(const s of steps){ await sleep(900); ex.append(el('p',{style:'font-size:20px;font-weight:800;margin:.3em 0;animation:enter .4s'},s)); tone(220,.15,'square',.05); }
+      await sleep(700); ex.append(why('<b>Nikomu, kto by bol od vodcu nezávislý.</b> Preto sa moc delí a moci sa navzájom bŕzdia. Parlament schvaľuje zákony a kontroluje vládu. Vláda a úrady zákony vykonávajú. Všeobecné súdy rozhodujú spory a trestné veci. [[ústavný súd|Ústavný súd]] posudzuje, či zákony neodporujú ústave. Ďalšie poistky sú prezident, verejný ochranca práv, slobodné médiá a voľby. Keď jedna strana ovládne všetky tieto poistky naraz, ako v Československu po roku 1948, človek nemá kde hľadať nestrannú ochranu.'));
+      done();
+    }},'Experiment: zlúč moc do jednej ruky');
+    ex.append(pw,el('div',{style:'margin-top:12px'},b)); box.append(ex);
+  });
+}};
+
+T.jetodemo = {n:'Je to demokracia?', run(box, done, lvl){
+  const C=[
+   ['Voľby sú každé štyri roky, ale na lístku je iba jedna strana.',0,'Bez výberu to nie sú voľby, ale divadlo. Presne takto to bolo v Československu pred rokom 1989.'],
+   ['Vláda prehrala voľby a pokojne odovzdala moc víťazom.',1,'Pokojné odovzdanie moci je jeden z najlepších testov demokracie.'],
+   ['Prezident odložil voľby na neurčito, lebo „teraz nie je vhodná doba“.',0,'Voľby sa musia konať v pravidelných termínoch. Kto ich odkladá podľa seba, berie ľuďom moc.'],
+   ['Noviny ostro kritizujú premiéra a nikoho za to nezatvorili.',1,'Slobodná kritika moci je znak zdravej demokracie.'],
+   ['Súd rozhodol proti vláde a vláda rozsudok rešpektovala.',1,'Aj vláda je pod zákonom. Tomu sa hovorí [[právny štát]].'],
+   ['Voliť môžu iba muži, ktorí vlastnia pôdu.',0,'Volebné právo musí byť všeobecné a rovné, každý dospelý občan má jeden hlas.'],
+   ['Opozičný líder sedí vo väzení, lebo „urazil hlavu štátu“.',0,'Väzniť súpera za kritiku je typický znak diktatúry.'],
+   ['Parlament dlho a nahlas diskutuje, potom zákon schváli väčšinou.',1,'Hádka v parlamente nie je chyba demokracie, ale jej súčasť.'],
+   ['Ľudia zbierajú podpisy pod petíciu proti stavbe diaľnice.',1,'Petičné právo, Ústava SR, článok 27.'],
+   ['Hlasuje sa verejne, zdvihnutím ruky pred policajtom.',0,'Bez tajného hlasovania sa ľudia boja hlasovať podľa seba.'],
+   ['Vládna strana dostáva vo všetkých voľbách 99 % hlasov.',0,'Samotné percento ešte nie je dôkaz manipulácie. Takýto výsledok opakovane vo všetkých voľbách je však silný dôvod preveriť, či boli voľby naozaj slobodné, súťažné a férové. V Československu pred rokom 1989 neboli.'],
+   ['Menšina môže v televízii a v novinách hovoriť vlastným jazykom.',1,'Ochrana menšín patrí k demokracii.']];
+  const n=[5,6,7][N(lvl)]; const it=shuffle(C).slice(0,n); let i=0, errs=0;
+  const area=el('div'); box.append(el('p',{class:'instr'},'Tu sú správy z vymyslených krajín. Rozhodni, či ide o demokraciu.'), area);
+  const next=()=>{
+    area.replaceChildren(); if(i>=it.length){ area.append(why(`Hotovo, ${errs} ${plural(errs,'chyba','chyby','chýb')}. Demokraciu nespoznáš len podľa toho, či sú voľby. Pozri sa, či sú <b>slobodné</b>, či môžeš <b>kritizovať</b>, či sú <b>súdy nezávislé</b> a či sa moc dá <b>pokojne vymeniť</b>.`)); done(); return; }
+    const c=it[i]; area.append(el('div',{class:'mono',style:'font-size:13px;color:var(--muted)'},`Krajina ${i+1} / ${it.length}`));
+    mc(area,c[0],[{t:'✅ Áno, takto vyzerá demokracia.',ok:c[1]===1,why:c[2]},{t:'⛔ Nie, toto už demokracia nie je.',ok:c[1]===0,why:c[2]}],(ok)=>{ if(!ok) errs++; i++; area.append(el('button',{class:'btn sm',style:'margin-top:10px',onclick:next},'Ďalšia krajina →')); },{retry:false});
+  }; next();
+}};
+
+// ---------- SPIS 03 – EXPERIMENT ----------
+const reveal = (html) => el('div',{class:'reveal',role:'note'}, el('div',{class:'k'},'HISTORICKÉ POZADIE · ČO SA NAOZAJ DIALO'), el('div',{html:rich(html)}));
+const regHead = (t) => el('div',{}, el('div',{class:'hd'}, el('span',{},'ÚRAD PRE VECI OBČANOV'), el('span',{},t)), el('div',{class:'model'},'Modelová situácia · postavy a texty sú vymyslené, mechanizmus je historický'));
+const lostLog = (k)=>{ S.lost=S.lost||{}; S.lost[k]=1; save(); };
+
+T.r_dotaznik = {n:'Formulár 1', run(box, done){
+  const f=el('div',{class:'regbox'}); box.append(f);
+  const nm=el('input',{id:'f17a',value:S.name||'',placeholder:'Meno a priezvisko',autocomplete:'off'});
+  const sch=el('select',{id:'f17b'},...['Gymnázium','Konzervatórium','Stredná zdravotnícka škola','Stredná priemyselná škola – informatika','Škola umeleckého priemyslu'].map(x=>el('option',{},x)));
+  const btn=el('button',{class:'btn',style:'margin-top:14px'},'Odoslať prihlášku');
+  f.append(regHead('TLAČIVO Č. 17/A'), el('p',{},'Súdruh žiak, súdružka žiačka, vyplňte prihlášku na strednú školu. O prijatí rozhoduje aj kádrový posudok.'),
+    el('label',{for:'f17a'},'Meno'), nm, el('label',{for:'f17b'},'Kam sa hlásite?'), sch, btn);
+  btn.onclick=async()=>{
+    S.name=nm.value.trim()||S.name||''; save();
+    btn.disabled=true; btn.textContent='Overuje sa v archíve…';
+    const lines=['Kontrola: prospech … výborný ✔','Kontrola: správanie … vzorné ✔','Kontrola: rodina …'];
+    for(const l of lines){ await sleep(650); f.append(el('div',{class:'mono',style:'font-size:14px'},l)); tone(500,.05,'square',.04); }
+    await sleep(900);
+    const why1=pick(['Starý otec mal do roku 1948 vlastný obchod. Triedny pôvod: nevyhovujúci.','Teta v roku 1968 emigrovala do Rakúska. Príbuzný v kapitalistickom zahraničí.','Mama pravidelne chodí do kostola a dala vás pokrstiť.','Otec odmietol vstúpiť do strany a na schôdzi kritizoval vedúceho.','Starý otec podpísal v roku 1968 petíciu proti okupácii.']);
+    f.append(el('p',{style:'font-weight:700;margin-top:10px'},'⚠ '+why1),
+      el('p',{},`Výsledok: neprijatý/á. Odporúčaný odbor podľa potrieb národného hospodárstva: ${pick(['murár','zlievač','dojička','obrábač kovov'])}.`));
+    stamp('ZAMIETNUTÉ',{x:30,y:40}); lostLog('vzdelanie');
+    box.append(reveal('Tvoje známky boli výborné. Nevadilo to. Režim rozhodoval podľa [[kádrový posudok|kádrového posudku]]: kto boli tvoji rodičia a starí rodičia, či chodia do kostola, či majú príbuzných na Západe. Deti „nespoľahlivých“ rodín sa často nedostali na gymnázium ani na vysokú školu, hoci mali samé jednotky. Nebolo to automatické: záviselo od obdobia (najtvrdšie v 50. rokoch a na začiatku normalizácie), od školy aj od miestnych funkcionárov a niektorí sa na štúdium dostali. Riziko však viselo nad každou takou rodinou. Trestať sa dalo človeka za to, <b>kým bol niekto v jeho rodine</b>.'));
+    done();
+  };
+}};
+
+T.r_nazor = {n:'Formulár 2', run(box, done){
+  const f=el('div',{class:'regbox'}); box.append(f);
+  const ta=el('textarea',{id:'f17n',rows:3,placeholder:'Napíš úprimne, aspoň jednu vetu…'});
+  const btn=el('button',{class:'btn',style:'margin-top:12px'},'Odoslať do školského časopisu');
+  f.append(regHead('TLAČIVO Č. 17/B'), el('label',{for:'f17n'},'Čo by si na svojej škole alebo v meste zmenil(a)? Napíš to úprimne.'), ta, btn);
+  btn.onclick=async()=>{
+    const orig=ta.value.trim(); if(orig.length<5){ ta.focus(); ta.placeholder='Napíš aspoň krátku vetu.'; return; }
+    S.orig=orig; save();
+    btn.remove(); const ty=el('div',{class:'typer'},orig); ta.replaceWith(ty);
+    f.append(el('div',{class:'mono',style:'margin-top:8px;font-size:14px'},'✎ Text posudzuje redakčná rada…'));
+    await sleep(1200);
+    let t=orig; while(t.length){ t=t.slice(0,-Math.max(1,Math.ceil(t.length/25))); ty.textContent=t+'▌'; await sleep(28); }
+    const ok='Na našej škole je všetko v najlepšom poriadku. Ďakujem strane a vláde za starostlivosť o mládež.';
+    for(let i=1;i<=ok.length;i++){ ty.textContent=ok.slice(0,i)+'▌'; if(i%3===0) tone(1200,.02,'square',.02); await sleep(30); }
+    ty.textContent=ok; stamp('SCHVÁLENÉ<br><small>na uverejnenie</small>',{x:40,y:45}); lostLog('prejav');
+    f.append(el('p',{style:'margin-top:10px'},'Tvoj pôvodný text: '),el('p',{style:'text-decoration:line-through;opacity:.6'},orig));
+    box.append(reveal('Fungovala [[cenzúra]]: čo vyšlo v novinách, v rádiu či v knihe, schvaľovali poverení ľudia. Ešte silnejšia bola cenzúra v hlave. Ľudia sa naučili hovoriť <b>doma jedno a v škole či v práci druhé</b>. Deti dostávali od rodičov rady typu „toto v škole nehovor“. Zakázané texty sa tajne prepisovali na písacích strojoch, vznikal [[samizdat]].'));
+    done();
+  };
+}};
+
+T.r_hudba = {n:'Formulár 3', run(box, done){
+  const songs=shuffle([
+   ['Elektrický kôň','Dlhovlasí · rock, anglické texty',1,'„Západná dekadencia, dlhé vlasy“'],
+   ['Pieseň o žatve','Súbor Úsvit · budovateľská',0,''],
+   ['Nuda','Pankáči z Petržalky · punk',1,'„Hudba nezodpovedá socialistickej mládeži“'],
+   ['Ďakujeme ti, strana','Jozef Rudý · schlager',0,''],
+   ['Prečo nesmieme ísť za hranice','Kapela Plot · folk',1,'„Text poškodzuje záujmy republiky“'],
+   ['Top 10 z rádia Luxembourg','Rôzni interpreti · západné rádio',1,'„Nepriateľské vysielanie“'],
+   ['Pionierska','Detský zbor rozhlasu',0,''],
+   ['Duchovné piesne','Zbor farnosti · náboženské',1,'„Šírenie náboženských predsudkov“']]);
+  const f=el('div',{class:'regbox'}); box.append(f);
+  const list=el('div'); const sel=new Set();
+  const btn=el('button',{class:'btn',style:'margin-top:12px',disabled:true},'Odoslať zoznam na schválenie');
+  songs.forEach((s,i)=>list.append(el('label',{class:'song'}, el('input',{type:'checkbox',style:'width:24px;height:24px',onchange:e=>{ e.target.checked?sel.add(i):sel.delete(i); btn.disabled=sel.size!==4; }}), el('span',{class:'s'},s[0],el('small',{},s[1])))));
+  f.append(regHead('TLAČIVO Č. 17/C'), el('p',{},'Organizujete školskú diskotéku. Vyberte presne 4 skladby. Zoznam schváli kultúrna komisia.'), list, btn);
+  btn.onclick=async()=>{
+    btn.remove(); [...list.querySelectorAll('input')].forEach(x=>x.disabled=true);
+    await sleep(600); let ban=0;
+    for(const [k,i] of [...list.children].entries()){ const s=songs[k]; if(s[2]){ i.classList.add('ban'); i.querySelector('.s small').textContent+=' · ZAKÁZANÉ: '+s[3]; if(sel.has(k)) ban++; tone(160,.1,'sawtooth',.05); await sleep(350);} }
+    stamp('NEVHODNÉ',{x:35,y:35}); lostLog('umenie');
+    const okSel=songs.filter((s,k)=>sel.has(k)&&!s[2]).map(s=>s[0]);
+    f.append(el('p',{style:'font-weight:700;margin-top:10px'},`Z tvojich 4 skladieb komisia zakázala ${ban}. `+(okSel.length?`Schválila: ${okSel.join(', ')}.`:'Neschválila ani jednu.')+' Z celého zoznamu zostali schválené iba tri skladby: Pieseň o žatve, Ďakujeme ti, strana, Pionierska.'));
+    box.append(reveal('Kapely ani skladby tu nie sú skutočné, ale princíp áno. Hudbu, knihy aj filmy schvaľovali komisie. Rocková skupina The Plastic People of the Universe nesmela verejne hrať a v roku 1976 súd odsúdil niekoľkých členov a spolupracovníkov skupiny; viacerí dostali nepodmienečné tresty. Toto súdne konanie bolo jedným z podnetov na vznik [[Charta 77|Charty 77]]. Režim rušil vysielanie západných rádií, platne a kazety sa pašovali. Aj za dlhé vlasy mohol mať mladý človek problémy.'));
+    done();
+  };
+}};
+
+T.r_donos = {n:'Formulár 4', run(box, done){
+  const f=el('div',{class:'regbox'}); box.append(f);
+  f.append(regHead('PREDVOLANIE'), el('p',{},'Na hodine si spolužiak Marek nakreslil karikatúru súdruha predsedu. Celá trieda sa smiala.'),
+    el('p',{},'Na druhý deň ťa zavolajú do riaditeľne. Riaditeľ odíde. Na stoličke sedí pán v sivom obleku a usmieva sa:'),
+    el('p',{style:'font-size:19px;font-style:italic'},'„Vieme, že chceš ísť na gymnázium. Môžeme ti pomôcť. Stačí podpísať, čo Marek kreslil. A občas nám povedať, o čom sa v triede rozpráva. Nikto sa to nedozvie.“'));
+  const ch=[
+   ['Podpíšem.','Na gymnázium si sa dostal(a). Marek nie. Pán v sivom obleku sa o mesiac ozve znova a chce ďalšie správy. Odmietnuť je teraz ťažšie: má tvoj podpis. Tvoje meno je v jeho evidencii.','ZAEVIDOVANÝ'],
+   ['Odmietnem.','Pán sa usmial: „Škoda. Rozmysli si to.“ Na gymnázium ťa nevzali. Otec mal o mesiac problémy v práci. Nikto nepovedal prečo.','NESPOĽAHLIVÝ'],
+   ['Poviem, že som nič nevidel(a).','Pán si niečo zapísal. „Prídeme znova.“ Prišli ešte trikrát. Odvtedy si dávaš pozor, čo hovoríš aj pred kamarátmi.','SLEDOVANÝ']];
+  const r=el('div',{class:'opts'}); f.append(r);
+  ch.forEach(c=>r.append(el('button',{class:'opt',onclick:()=>{
+    r.replaceChildren(el('p',{style:'font-weight:700'},c[1])); stamp(c[2],{x:28,y:42}); lostLog('sukromie');
+    box.append(reveal('Neexistovala dobrá voľba. A presne o to išlo. Režim nepotreboval, aby ho ľudia milovali. Stačilo, aby sa báli. Tajná polícia [[ŠtB]] získavala informátorov rôzne: presvedčením, sľubmi výhod, ale aj <b>vydieraním, nátlakom a manipuláciou</b>. Ľudia nevedeli, komu môžu veriť. Archívy ŠtB dnes sprístupňuje Ústav pamäti národa a mnohí v nich zistili, že o nich podával správy kamarát, kolega alebo sused.'));
+    box.append(fact('Pozor pri čítaní archívov','ŠtB viedla ľudí v rôznych kategóriách. Napríklad <b>kandidát tajnej spolupráce</b> bol človek, ktorého ŠtB len chcela získať, a súdy uznali, že takto evidovaná osoba ešte nemusela vedome spolupracovať. Samotný záznam v evidencii preto <b>automaticky nedokazuje vinu</b>. Rozhoduje, či človek vedome a dobrovoľne súhlasil so spoluprácou, či sa k nej zaviazal a či následne plnil úlohy a podával informácie. Historici preto čítajú celý zväzok, nie iba meno v zozname.'));
+    box.append(el('details',{class:'hint'},el('summary',{},'Na diskusiu v triede'),el('p',{},'Mal by si právo odsudzovať niekoho, kto podpísal, aby jeho dieťa mohlo študovať? Je rozdiel medzi tým, kto podpísal pod nátlakom a potom nič neurobil, a tým, kto roky dobrovoľne donášal? Kde je hranica medzi slabosťou a vinou?')));
+    done();
+  }},c[0])));
+}};
+
+T.r_volby = {n:'Formulár 5', run(box, done){
+  const f=el('div',{class:'regbox'}); box.append(f);
+  f.append(regHead('VOĽBY 1986'), el('p',{},'Je volebný deň. Pred školou hrá dychovka, v miestnosti visia vlajky. Dostaneš hlasovací lístok.'),
+    el('div',{class:'ballot'}, el('div',{style:'font-size:13px;letter-spacing:.1em'},'HLASOVACÍ LÍSTOK · KANDIDÁTKA NÁRODNÉHO FRONTU'), el('div',{style:'font-size:22px;font-weight:700;margin:12px 0'},'Súdruh Ján Vzorný'), el('div',{style:'font-size:13px'},'jediný kandidát pre váš obvod')));
+  const r=el('div',{class:'opts',style:'margin-top:12px'}); f.append(r);
+  const end=async(t)=>{
+    r.replaceChildren(el('p',{style:'font-weight:700'},t)); await sleep(1200);
+    const res=el('div',{class:'big-num',style:'text-align:center;margin:12px 0'},'0,0 %'); f.append(el('p',{style:'text-align:center'},'Výsledok vo vašom obvode:'),res);
+    for(let v=0; v<=999; v+=17){ res.textContent=(Math.min(v,999)/10).toFixed(1).replace('.',',')+' %'; await sleep(16); }
+    res.textContent='99,9 %'; stamp('ZVOLENÝ',{x:40,y:38}); lostLog('volby');
+    box.append(reveal('Voľby v máji 1986 boli posledné pred novembrom. Na lístku bola jediná [[Národný front|kandidátka Národného frontu]], kandidátov bolo presne toľko ako miest. Podľa oficiálnych výsledkov bola volebná účasť v celom Československu 99,39 %, v Slovenskej socialistickej republike pri voľbách do Slovenskej národnej rady 99,75 %. Za kandidátov Národného frontu do Slovenskej národnej rady hlasovalo 99,95 % platných hlasov. Bežná bola <b>manifestačná voľba</b>: ľudia hádzali neupravený lístok do urny verejne, pred komisiou. Zákon plentu umožňoval, v praxi však bolo jej použitie nápadné a mnohí sa báli následkov. Konkrétne situácie v našom modeli (napríklad agitátor pri dverách) sú ilustráciou spoločenského tlaku, nie popisom toho, čo sa dialo v každom obvode. Výsledok bol jasný ešte pred voľbami.'));
+    done();
+  };
+  [['Vhodím lístok do urny bez úprav. Tak ako všetci.','Lístok padol do urny. Členka komisie sa usmiala.'],
+   ['Pôjdem za plentu a meno prečiarknem.','Za plentou si sám. Všetci ostatní hádžu lístky rovno do urny, takže si nápadný(á). Cítiš na sebe pohľady komisie. Vieš, že niekto si to môže zapamätať.'],
+   ['Nepôjdem voliť.','Večer zazvoní pri dverách „agitátor“ s prenosnou urnou: „Nechcete mať problémy, však?“ Rodičia ťa pošlú podpísať.']]
+   .forEach(o=>r.append(el('button',{class:'opt',onclick:()=>end(o[1])},o[0])));
+}};
+
+T.r_hranica = {n:'Formulár 6', run(box, done){
+  const f=el('div',{class:'regbox'}); box.append(f);
+  f.append(regHead('CESTOVANIE'), el('p',{},'Z Bratislavy je to do Viedne vzdušnou čiarou približne 55 km, po ceste o niečo viac. Chceš ísť cez víkend na výlet. Stačí kliknúť.'));
+  const area=el('div',{class:'runaway'}); const b=el('button',{class:'btn',style:'left:40%;top:40%'},'🚌 Odísť do Viedne');
+  area.append(b, el('div',{style:'position:absolute;right:6px;top:0;bottom:0;width:10px;background:repeating-linear-gradient(0deg,#333 0 6px,transparent 6px 12px)'}));
+  f.append(area); let tries=0;
+  const run=(e)=>{ if(tries>=6) return; e&&e.preventDefault(); tries++; b.style.left=rnd(2,60)+'%'; b.style.top=rnd(5,72)+'%'; tone(300+tries*60,.06,'square',.04); if(tries===6){ b.textContent='📄 Požiadať o výjazdnú doložku'; } };
+  b.addEventListener('pointerenter', e=>{ if(e.pointerType==='mouse') run(e); });
+  b.addEventListener('pointerdown', e=>{ if(tries<6) run(e); });
+  b.addEventListener('click', e=>{ if(tries<6){ if(!e.detail) run(); return; } area.remove(); skip.remove(); form(); });
+  const skip=el('button',{class:'btn ghost sm',style:'margin-top:10px',onclick:()=>{ tries=6; area.remove(); skip.remove(); form(); }},'Pokračovať bez interakcie');
+  f.append(skip);
+  function form(){
+    const ta=el('input',{placeholder:'napr. pozrieť si múzeum'});
+    const s=el('button',{class:'btn',style:'margin-top:10px'},'Podať žiadosť');
+    f.append(el('label',{},'Dôvod cesty do kapitalistickej cudziny:'), ta, el('p',{style:'font-size:14px'},'Prílohy: devízový prísľub, odporúčanie školy alebo zamestnávateľa a ďalšie požadované doklady. Muži v brannom veku potrebovali aj potvrdenie vojenskej správy. Súhlas rodičov sa vyžadoval pri neplnoletých žiadateľoch.'), s);
+    s.onclick=async()=>{ s.disabled=true; s.textContent='Žiadosť sa vybavuje…'; await sleep(1400);
+      f.append(el('p',{style:'font-weight:700'},'Žiadosť zamietnutá. Dôvod sa neuvádza.')); stamp('ZAMIETNUTÉ<br><small>bez udania dôvodu</small>',{x:30,y:44}); lostLog('pohyb');
+      box.append(reveal('Pas sám osebe stačil len na cesty do niektorých socialistických krajín. Na cestu na Západ ste potrebovali [[výjazdná doložka|výjazdnú doložku]], ktorú vydávali príslušné útvary pasov a víz. K tomu bol potrebný devízový prísľub od štátnej banky a odporúčanie školy alebo zamestnávateľa. Doložka nebola nárok, štát ju mohol odoprieť bez vysvetlenia. Hranicu strážila [[železná opona]]: ostnatý drôt, elektrický prúd, hliadky so psami. Podľa Ústavu pamäti národa zadržali na československom úseku pri pokuse o útek takmer 49 000 ľudí. Stovky ľudí pri ňom zahynuli. Z Petržalky bolo vidieť Rakúsko. Bez potrebných povolení sa tam však vycestovať nedalo.'));
+      done(); };
+  }
+}};
+
+T.r_koniec = {n:'17. 11. 1989', run(box, done, lvl){
+  setRegime(false);
+  flood(innerWidth/2, innerHeight/2).then(()=>keyRain(160)); jingle(16);
+  const L=[['vzdelanie','čl. 42','Právo na vzdelanie a rovný prístup k nemu','Formulár 1: diskriminovali ťa pre rodinu a jej postoje.'],['prejav','čl. 26','Sloboda prejavu','Formulár 2: prepísali ti názor.'],['umenie','čl. 43','Sloboda umenia','Formulár 3: zakázali ti hudbu.'],['sukromie','čl. 19','Ochrana súkromia','Formulár 4: chceli, aby si donášal(a).'],['volby','čl. 30','Slobodné voľby','Formulár 5: nebolo koho voliť.'],['pohyb','čl. 23','Sloboda pohybu','Formulár 6: nepustili ťa za hranice.']];
+  const t=el('div',{style:'text-align:center;padding:8px 0'}, el('div',{class:'eyebrow'},'EXPERIMENT SKONČIL'), el('div',{class:'bigdate'},'17. 11. 1989'));
+  box.append(t, el('p',{},'Za 15 minút si prišiel (prišla) o šesť slobôd. Dnes ich máš všetky zaručené v Ústave Slovenskej republiky:'));
+  const lost=el('div',{class:'lost'}); box.append(lost);
+  L.forEach((x,i)=>setTimeout(()=>{ lost.append(el('div',{},el('b',{},x[1]),el('span',{},el('strong',{},x[2]),el('br'),el('small',{style:'color:var(--muted)'},x[3])))); jingle(3); }, 400+i*450));
+  setTimeout(()=>{
+    box.append(why('Nikto ti ich nedal zadarmo. Získali ich ľudia, ktorí v novembri 1989 vyšli do ulíc. Mnohí z nich boli len o pár rokov starší ako ty.'));
+    const ta=el('textarea',{class:'manif',placeholder:'Ktorá strata by ťa bolela najviac? Prečo?'});
+    box.append(el('h3',{style:'margin-top:16px'},'Tvoja odpoveď'), ta, el('button',{class:'btn',style:'margin-top:10px',onclick:e=>{ S.refl=ta.value.trim(); save(); e.target.remove(); box.append(el('div',{class:'fb ok'},'✔ Uložené. Použiješ to na konci vo svojom manifeste.')); done(); }},'Uložiť a uzavrieť experiment'));
+    if(S.orig) box.append(fact('Tvoja pôvodná veta, ktorú cenzor prepísal', '„'+S.orig.replace(/</g,'&lt;')+'“<br>Dnes ju môžeš povedať nahlas. Skús to. Napríklad žiackej rade alebo riaditeľovi.'));
+  }, 400+L.length*450+200);
+}};
+
+// ---------- SPIS 04 ----------
+const PILLARS=[
+ {id:'stud',short:'ŠTUDENTI',n:'Študenti',d:'16. – 20. 11. 1989',t:'16. novembra vyšli do ulíc študenti v Bratislave, 17. novembra v Prahe, kde polícia pokojný pochod brutálne rozbila. Vysoké školy v celej krajine vzápätí vyhlásili štrajk a študenti rozvážali správy do miest a dedín.'},
+ {id:'art',short:'UMELCI',n:'Herci a umelci',d:'od 18. 11. 1989',t:'Herci prestali hrať predstavenia. Divadlá sa zmenili na miesta, kde sa diskutovalo a čítali sa vyhlásenia. Speváci a herci vystupovali na námestiach.'},
+ {id:'med',short:'MÉDIÁ',n:'Médiá',d:'koniec novembra 1989',t:'Televízia a noviny najprv mlčali alebo klamali. Potom sa novinári vzbúrili a televízia začala prenášať zhromaždenia z námestí. Ľudia zrazu videli, že ich je státisíce.'},
+ {id:'rob',short:'ROBOTNÍCI',n:'Robotníci',d:'27. 11. 1989',t:'Dvojhodinový [[generálny štrajk]] od 12.00 do 14.00. Zapojila sa obrovská časť krajiny. Strana, ktorá tvrdila, že vládne v mene robotníkov, zistila, že robotníci stoja proti nej.'},
+ {id:'str',short:'STRANA',n:'Vedenie strany a úradníci',d:'24. 11. 1989',t:'Ústredný výbor KSČ prijal odstúpenie generálneho tajomníka Miloša Jakeša aj všetkých členov predsedníctva a sekretariátu. Novým generálnym tajomníkom sa stal Karel Urbánek. Do nového vedenia sa však vrátili aj niektorí tvrdí funkcionári, a tak ľudia protestovali ďalej. Úradníci prestávali veriť, že režim prežije.'},
+ {id:'arm',short:'ARMÁDA',n:'Armáda a milície',d:'november 1989',t:'Vedenie strany povolalo do Prahy Ľudové milície a vojaci boli v pohotovosti. Proti demonštrantom ich však nenasadili. Bez ochoty strieľať sú zbrane len kus železa.'}];
+
+T.piliere = {n:'Piliere moci', run(box, done, lvl){
+  const gone=[]; const pic=el('div',{class:'pillars',style:'color:var(--ink)'}); const info=el('div');
+  const list=el('div',{class:'plist'});
+  const draw=(fallen)=>{ pic.innerHTML=ART.temple(gone,fallen); };
+  box.append(el('p',{class:'instr',html:'Strecha MOCI stojí na šiestich pilieroch. Ťukni na pilier a zisti, ako v novembri 1989 <b>prestal poslúchať</b>. Sleduj strechu. ([[piliere moci]])'}), pic, list, info);
+  PILLARS.forEach(p=>list.append(el('button',{onclick:async e=>{
+    if(gone.includes(p.id)) return; gone.push(p.id); e.currentTarget.classList.add('gone'); thud(); draw(false); pic.classList.remove('quake'); void pic.offsetWidth; pic.classList.add('quake'); burstAt(pic,12);
+    info.replaceChildren(fact(p.d+' · '+p.n, p.t));
+    if(gone.length===PILLARS.length){ await sleep(1100); draw(true); thud(); setTimeout(thud,200); pic.classList.remove('quake'); void pic.offsetWidth; pic.classList.add('quake'); keyRain(90);
+      info.append(el('div',{class:'reveal'},el('div',{class:'k'},'29. 11. 1989'),el('p',{html:'Federálne zhromaždenie vyškrtlo z ústavy článok 4 o [[vedúca úloha strany|vedúcej úlohe komunistickej strany]]. 29. decembra zvolilo za prezidenta Václava Havla, ktorý ešte v máji sedel vo väzení.'})));
+      const q=el('div',{style:'margin-top:14px'}); info.append(q);
+      mc(q,'Ktorý pilier rozhodol?',[
+        {t:'Žiadny sám. Moc padla, lebo naraz prestali poslúchať všetci.',ok:true,why:'Moc nie je vec, ktorú má vodca vo vrecku. Je to <b>vzťah</b>: niekto rozkazuje a ostatní poslúchajú. Keď prestanú poslúchať, rozkaz je len hlas v prázdnej miestnosti.'},
+        {t:'Armáda, lebo má zbrane.',why:'Armáda práve nezasiahla. Zbrane bez ľudí, ktorí sú ochotní strieľať, nič nezmôžu.'},
+        {t:'Študenti, ostatní len prizerali.',why:'Študenti boli iskra. Keby sa k nim nepridali robotníci, herci, novinári a nakoniec aj časť úradníkov, režim by ich vydržal.'}],()=>{
+          if(lvl!=='obcan') q.append(why('<b>Prečo nenásilie?</b> Násilie by režimu dalo zámienku zasiahnuť a ospravedlniť sa. Pokojný dav s kľúčmi a sviečkami sa ťažko vydáva za „nepriateľa“. Výskumníčky Erica Chenoweth a Maria Stephan porovnali stovky povstaní z 20. storočia a zistili, že nenásilné kampane uspeli približne dvakrát častejšie ako ozbrojené.'));
+          done(); });
+    }
+  }},p.n)));
+  draw(false);
+}};
+
+T.kluce = {n:'Štrngni', run(box, done){
+  let n=0; const goal=800000, cnt=el('div',{class:'big-num',style:'font-size:clamp(34px,9vw,60px)'},'0'), bar=el('div',{class:'prog',style:'width:100%'},el('i',{style:'width:0'}));
+  const k=el('button',{class:'keybtn','aria-label':'Štrngni kľúčmi',html:ART.key('#141414')});
+  let fin=false;
+  k.addEventListener('click',e=>{
+    jingle(8); n=Math.min(goal, n+rnd(9000,16000)); cnt.textContent=fmt(n); bar.firstChild.style.width=(n/goal*100)+'%';
+    let bx=e.clientX, by=e.clientY; if(!e.detail||(!bx&&!by)){ const r=k.getBoundingClientRect(); bx=r.left+r.width/2; by=r.top+r.height/2; }
+    burst(bx,by,14,['#ffe14a','#f2efe8',accent()]); cnt.classList.remove('quake'); void cnt.offsetWidth; cnt.classList.add('quake');
+    if(n>=goal && !fin){ fin=true; keyRain(200); finish(); }
+  });
+  box.append(el('p',{class:'instr'},'25. novembra 1989 sa na Letenskej pláni v Prahe zišlo podľa odhadov okolo 800 000 ľudí, v Bratislave zaplnili Námestie SNP. Ťukaj a štrngaj, kým sa nezaplní celá pláň.'),
+    el('div',{class:'keys'},k,cnt,el('div',{class:'mono',style:'font-size:13px;color:var(--muted)','aria-live':'polite'},'ľudí s kľúčmi'),bar,
+      el('button',{class:'btn ghost sm',onclick:e=>{ if(fin) return; fin=true; n=goal; cnt.textContent=fmt(n); bar.firstChild.style.width='100%'; e.currentTarget.remove(); keyRain(200); finish(); }},'Pokračovať bez štrngania')));
+  function finish(){
+    box.append(why('Prečo kľúče? Najčastejší výklad: ľudia nimi zvonili ako zvončekom na rozlúčku. <b>„Odzvonilo vám!“</b> Kľúče mal každý vo vrecku a zvuk státisícov kľúčov bol silnejší ako akýkoľvek prejav. Bolo to hlučné, ale nikomu to neublížilo.')); box.append(el('p',{class:'mono',style:'font-size:12px;color:var(--muted)'},'Počítadlo je herná metafora, nie skutočné počítanie ľudí. Počet 800 000 je odhad účasti na Letnej.'));
+    done();
+  }
+}};
+
+T.os = {n:'Ako to šlo za sebou', run(box, done, lvl){
+  const E=[
+   ['Sviečková manifestácia v Bratislave','25. 3. 1988',2],
+   ['Študentská demonštrácia v Bratislave','16. 11. 1989',1],
+   ['Zásah polície proti študentom na Národnej triede v Prahe','17. 11. 1989',0],
+   ['Vznik Verejnosti proti násiliu a Občianskeho fóra','19. 11. 1989',0],
+   ['Jakeš a dovtedajšie predsedníctvo a sekretariát ÚV KSČ dali funkcie k dispozícii','24. 11. 1989',1],
+   ['Dvojhodinový generálny štrajk','27. 11. 1989',0],
+   ['Z ústavy vyškrtli vedúcu úlohu strany','29. 11. 1989',0],
+   ['Václav Havel zvolený za prezidenta','29. 12. 1989',0],
+   ['Prvé slobodné voľby','8. – 9. 6. 1990',2]];
+  const L=N(lvl); const it=E.filter(e=>e[2]<=L).map(e=>({t:e[0],d:e[1]}));
+  box.append(el('p',{class:'instr'},'Zoraď udalosti od najstaršej po najnovšiu. Dátumy sa ukážu, keď to budeš mať správne.'));
+  orderer(box,it,()=>{ box.append(why('Od zásahu na Národnej triede po zvolenie Havla prešlo <b>42 dní</b>. Štyridsať rokov režimu sa rozpadlo za šesť týždňov, lebo mnohí ľudia s ním už dávno vnútorne nesúhlasili. Len sa báli to povedať nahlas, každý sám za seba.')); done(); });
+}};
+
+// ---------- SPIS 05 ----------
+T.signaly = {n:'Valdórske noviny', run(box, done, lvl){
+  const H=[
+   ['Vláda zvýšila dane z alkoholu a cigariet.',0,'Môžeš s tým nesúhlasiť, ale je to bežné politické rozhodnutie. Za nesúhlas môžeš voliť inak.'],
+   ['Opozícia ostro kritizuje rozpočet a žiada odvolanie ministra financií.',0,'Kritika vlády je úloha opozície.'],
+   ['Po dlhej debate parlament schválil vodičský preukaz od 17 rokov.',0,'Normálny legislatívny proces.'],
+   ['Strana, ktorá prehrala voľby, zablahoželala víťazom.',0,'Uznanie porážky je znak zdravej demokracie.'],
+   ['Desaťtisíc ľudí pokojne protestuje proti zatvoreniu nemocnice.',0,'Pokojný protest je ústavné právo, Ústava SR, článok 28.'],
+   ['Ústavný súd rozhodol, že časť zákona je v rozpore s ústavou. Parlament ju musí zosúladiť s ústavou.',0,'Takto majú poistky fungovať.'],
+   ['Minister odstúpil, keď novinári odhalili jeho podvod.',0,'Slobodné médiá urobili svoju prácu.'],
+   ['Nová vláda zrušila program predchádzajúcej vlády.',0,'Zmena politiky po voľbách je normálna. Na to sú voľby.'],
+   ['Vláda zmenila zákon tak, aby mohla sudcov najvyššieho súdu kedykoľvek odvolať a obsadiť ich vlastnými ľuďmi.',1,'Nejde o bežné vymenovanie sudcov podľa zákonných pravidiel, ale o účelové ovládnutie súdov. Kto ovláda súdy, toho nemá kto zastaviť.'],
+   ['Premiér: „Novinári, ktorí nás kritizujú, sú nepriatelia národa.“',1,'Označovanie kritikov za nepriateľov pripravuje pôdu na obmedzenie slobody tlače.'],
+   ['Parlament si sám predĺžil volebné obdobie o tri roky.',1,'Moc je požičaná na čas. Kto si ju predĺži sám, berie voličom ich právo.'],
+   ['Polícia dostala pokyn zapisovať mená ľudí na protivládnych protestoch.',1,'Zastrašovanie občanov. Presne takto začína strach.'],
+   ['Šéfa verejnoprávnej televízie bude odteraz menovať a odvolávať vládna strana a bude schvaľovať, čo sa vysiela.',1,'Problémom nie je verejnoprávne médium, ale strata jeho redakčnej nezávislosti. Médiá majú moc kontrolovať, nie jej slúžiť.'],
+   ['Líder strany: „Ak prehráme, výsledok volieb neuznáme.“',1,'Odmietanie demokratických pravidiel ešte pred voľbami.'],
+   ['Organizácie, ktoré kritizujú vládu, sa musia označiť ako „nepriateľské“.',1,'Ochrana kritiky je jadro demokracie. Nálepky slúžia na zastrašenie.'],
+   ['Politik vyzval priaznivcov, aby si to s opozíciou „vybavili na ulici“.',1,'Tolerovanie či podnecovanie násilia je jeden zo štyroch najvážnejších signálov.']];
+  const n=[8,10,12][N(lvl)]; const it=shuffle([...shuffle(H.filter(h=>!h[1])).slice(0,n/2),...shuffle(H.filter(h=>h[1])).slice(0,n/2)]);
+  let i=0,errs=0; const area=el('div');
+  box.append(el('p',{class:'instr',html:'Si novinár(ka) vo vymyslenej krajine Valdória. Rozhodni, či je správa <b>bežná politika</b> (môžeš s ňou nesúhlasiť), alebo <b>varovný signál</b> pre demokraciu.'}),area);
+  const next=()=>{ area.replaceChildren();
+    if(i>=it.length){ area.append(why(`${errs} ${plural(errs,'chyba','chyby','chýb')}. Kľúčové poznanie: <b>nesúhlas s vládou neznamená, že je ohrozená demokracia</b>. Ohrozená je vtedy, keď niekto útočí na <b>pravidlá hry</b>: voľby, súdy, médiá, právo protestovať.`)); done(); return; }
+    const h=it[i];
+    area.append(el('div',{class:'news'},el('div',{class:'mast'},el('span',{},'VALDÓRSKE NOVINY'),el('span',{},`${i+1}/${it.length}`)),el('div',{class:'hl'},h[0])));
+    const q=el('div',{style:'margin-top:10px'}); area.append(q);
+    mc(q,'',[{t:'🗳 Bežná politika',ok:!h[1],why:h[2]},{t:'🚨 Varovný signál',ok:!!h[1],why:h[2]}],ok=>{ if(!ok) errs++; i++; q.append(el('button',{class:'btn sm',style:'margin-top:10px',onclick:next},'Ďalšia správa →')); },{retry:false});
+  }; next();
+}};
+
+T.prejav = {n:'Hranice slobody prejavu', run(box, done, lvl){
+  const A=[['Napíšem na sieti, že sa mi nepáči prezident.','Kritika ústavných činiteľov je chránená.'],['Na proteste nesiem transparent „Vláda, odstúp!“','Pokojný protest a jeho heslá sú chránené.'],['V diskusii poviem názor, s ktorým nikto nesúhlasí.','Nepopulárny názor je stále názor.'],['Napíšem zdrvujúcu recenziu na film.','Kritika diela je sloboda prejavu.'],['Na žiackej rade kritizujem pravidlá školy.','Toto je občianska odvaha, nie priestupok.'],['Nakreslím karikatúru premiéra.','Satira mocných má dlhú tradíciu a je chránená.'],['Napíšem, že podľa mňa je nový zákon hlúpy.','Hodnotiaci názor na zákon je chránený.']];
+  const B=[['Napíšem spolužiakovi: „Zajtra ťa po škole zbijem.“','Vyhrážanie nie je názor. Môže to byť trestný čin.'],['Vyzývam na sieti, aby ľudia napadli ľudí inej farby pleti.','Podnecovanie k násiliu a nenávisti je trestný čin.'],['Rozšírim vymyslenú správu, že susedka kradne v obchode.','Nepravdivé obvinenie spôsobilé vážne poškodiť jej povesť môže byť trestný čin [[ohováranie|ohovárania]] (§ 373 Trestného zákona).'],['Zverejním na internete cudziu adresu, telefón a heslá.','Porušenie súkromia a ochrany osobných údajov.'],['Zavolám do školy, že je tam bomba, aby odpadol test.','Šírenie poplašnej správy je trestný čin.'],['Pošlem ďalej intímnu fotku spolužiačky bez jej súhlasu.','Vážny zásah do súkromia a dôstojnosti, môže ísť o trestný čin.']];
+  const n=[4,5,6][N(lvl)];
+  const it=shuffle([...shuffle(A).slice(0,n).map(x=>({t:x[0],c:0,ok:x[1],why:x[1]})),...shuffle(B).slice(0,n).map(x=>({t:x[0],c:1,ok:x[1],why:x[1]}))]);
+  box.append(el('p',{class:'instr',html:'[[sloboda prejavu|Sloboda prejavu]] chráni aj nepríjemné a ostré názory. Nechráni však vyhrážky, podnecovanie k násiliu ani lži, ktoré niekomu ničia život.'}));
+  sorter(box,it,['Smiem to povedať','Prekročená hranica'],()=>{
+    box.append(fact('Ústava SR, článok 26', 'Slobodu prejavu možno obmedziť <b>len zákonom</b> a len vtedy, ak je to v demokratickej spoločnosti nevyhnutné na ochranu práv a slobôd iných, bezpečnosti štátu, verejného poriadku alebo zdravia a mravnosti.'+(lvl!=='obcan'?' Všimni si rozdiel oproti roku 1985: vtedy režim potláčal <b>kritiku moci</b>. Dnes možno slobodu prejavu obmedziť <b>len na zákonnom základe a v nevyhnutnom rozsahu</b>, napríklad na ochranu práv iných alebo verejného poriadku.':'')));
+    done();
+  });
+}};
+
+T.poistky = {n:'Poistky demokracie', run(box, done){
+  const S1=['Ústavný súd','Slobodné médiá','Slobodné voľby','Verejný ochranca práv','Nezávislý súd','Občianska spoločnosť a petícia'];
+  const H=[['Parlament prijme zákon, ktorý porušuje ústavu.',0],['Minister potajomky rozkráda peniaze z ministerstva.',1],['Vládna strana by chcela vládnuť navždy.',2],['Úrad ti porušil základné právo a nikto ťa nepočúva.',3],['Polícia ťa zadrží bez dôvodu.',4],['Obyvatelia chcú zachovať park, organizujú sa a obec odmieta reagovať na ich pripomienky.',5]];
+  const it=shuffle(H); let i=0; const area=el('div');
+  box.append(el('p',{class:'instr'},'Demokracia má poistky. Ku každej hrozbe nájdi poistku, ktorá ju dokáže zastaviť.'),area);
+  const next=()=>{ area.replaceChildren(); if(i>=it.length){ area.append(why('Žiadna poistka nefunguje sama. Funguje len vtedy, keď ju ľudia bránia. Keď sa niekto pokúša ovládnuť súdy, médiá alebo voľby, je to útok na všetky poistky naraz.')); done(); return; }
+    const h=it[i]; const wrong=shuffle(S1.filter((_,k)=>k!==h[1])).slice(0,2);
+    mc(area,'⚠ '+h[0],[{t:S1[h[1]],ok:true},...wrong.map(w=>({t:w,why:'Táto poistka tu nepomôže najlepšie. Skús inú.'}))],()=>{ i++; area.append(el('button',{class:'btn sm',style:'margin-top:10px',onclick:next},'Ďalšia hrozba →')); });
+  }; next();
+}};
+
+// ---------- SPIS 05 · úroveň Ústavný sudca: test proporcionality ----------
+T.proporc = {n:'Rozhodni ako sudca', run(box, done){
+  const CASES=[
+   {z:'Zákon: kto počas vyhláseného krízového stavu verejne skritizuje vládu, dostane pokutu 5 000 €.', ans:[1,0,0,0], v:0,
+    m:'Cieľ (pokoj v kríze) znie rozumne, ale zákaz kritiky naň nie je vhodný ani nevyhnutný: kritika moci je jadro slobody prejavu a v kríze je ešte dôležitejšia. Zásah je zjavne neprimeraný. <b>Nesúlad s ústavou.</b>'},
+   {z:'Mesto zakáže pokojnú demonštráciu len preto, že jej heslá kritizujú primátora.', ans:[0,0,0,0], v:0,
+    m:'Ochrana primátora pred kritikou nie je legitímny cieľ. Zhromaždenie možno obmedziť len zo zákonom určených dôvodov, napríklad pre bezpečnosť, nie pre obsah kritiky. <b>Porušenie práva zhromažďovať sa (čl. 28).</b>'},
+   {z:'Zákon zakazuje fajčenie v uzavretých priestoroch reštaurácií. Majitelia reštaurácií namietajú, že to obmedzuje ich slobodu podnikania (čl. 35 Ústavy SR).', ans:[1,1,1,1], v:1, open:true,
+    m:'Obmedzuje sa sloboda podnikania (samostatné ústavné právo fajčiť neexistuje). Proti nej stojí ochrana zdravia zamestnancov a hostí (čl. 40). Cieľ je legitímny a zákaz je naň vhodný. Miernejšie riešenia, napríklad oddelené miestnosti, chránia zamestnancov slabšie. Zásah do podnikania je obmedzený, reštaurácia ďalej funguje. Vzorový záver: <b>skôr v súlade s ústavou</b>. Obhájiteľný je však aj iný záver, ak ho dobre zdôvodníš, napríklad pri malých podnikoch bez zamestnancov.'},
+   {z:'Na základe zákona vláda počas epidémie nebezpečnej choroby na 14 dní obmedzí zhromaždenia nad 50 ľudí, s výnimkou pohrebov.', ans:[1,1,1,1], v:1, open:true,
+    m:'Obmedzuje sa právo zhromažďovať sa (čl. 28). Ochrana zdravia je legitímny cieľ. Obmedzenie je dočasné, má výnimky a týka sa počtu ľudí, nie obsahu názorov. Pri krátkom trvaní a reálnom riziku môže byť primerané. Vzorový záver: <b>skôr v súlade s ústavou</b>. Sudcovia sa tu však môžu rozchádzať: rozhoduje, či existoval miernejší prostriedok (rúška, odstupy, zhromaždenia vonku) a či zákaz trval len nevyhnutne dlho.'},
+   {z:'Zákon: ktokoľvek môže byť bez súdneho príkazu kedykoľvek odpočúvaný, „aby sa predišlo trestnej činnosti“.', ans:[1,1,0,0], v:0,
+    m:'Predchádzanie trestnej činnosti je legitímny cieľ a odpočúvanie naň môže byť vhodné. Nie je však nevyhnutné odpočúvať kohokoľvek bez kontroly. Miernejší prostriedok je odpočúvanie konkrétnej osoby so súhlasom súdu. <b>Nesúlad s ústavou</b> (ochrana súkromia, čl. 19 a 22).'}];
+  const c=pick(CASES); const Q=['Sleduje zásah legitímny cieľ?','Je zásah vhodný na dosiahnutie cieľa?','Je nevyhnutný? (Neexistuje miernejší prostriedok?)','Je primeraný? (Prínos prevažuje nad zásahom do práva?)'];
+  box.append(el('p',{class:'instr',html:'Si sudca alebo sudkyňa Ústavného súdu vo Valdórii. Posúď prípad testom [[proporcionalita|proporcionality]]. Prejdi 4 kroky, rozhodni a <b>zdôvodni to vlastnými slovami</b>.'}),
+    el('div',{class:'news'},el('div',{class:'mast'},el('span',{},'PODANIE NA ÚSTAVNÝ SÚD'),el('span',{},'VALDÓRIA')),el('div',{class:'hl'},c.z)));
+  const steps=el('div',{style:'margin-top:14px'}); box.append(steps); const mine=[];
+  const step=(k)=>{
+    if(k>=Q.length) return verdict();
+    const r=el('div',{class:'row',style:'margin:10px 0'}, el('b',{style:'flex:1 1 100%'},(k+1)+'. '+Q[k]));
+    ['Áno','Nie'].forEach((t,j)=>r.append(el('button',{class:'btn ghost sm',onclick:()=>{ mine[k]=j===0?1:0; r.querySelectorAll('button').forEach(b=>b.disabled=true); r.append(el('span',{class:'mono',style:'font-size:13px'},'tvoja odpoveď: '+t)); step(k+1); }},t)));
+    steps.append(r);
+  };
+  const verdict=()=>{
+    const ta=el('textarea',{class:'manif','aria-label':'Zdôvodnenie rozhodnutia',placeholder:'Zdôvodnenie (aspoň 2 vety): Aký je cieľ? Je zásah nevyhnutný? Prečo je, alebo nie je primeraný?'});
+    const r=el('div',{class:'row',style:'margin-top:10px'});
+    const hintW=el('div',{class:'fb',role:'status'});
+    steps.append(el('h3',{style:'margin-top:14px'},'Rozhodnutie'), el('p',{class:'instr',style:'font-size:15px'},'V zdôvodnení pomenuj aspoň dva kroky testu: cieľ, vhodnosť, nevyhnutnosť, primeranosť.'), ta, hintW, r);
+    [['V súlade s ústavou',1],['V nesúlade s ústavou',0]].forEach(([t,v])=>r.append(el('button',{class:'btn sm',onclick:()=>{
+      const tx=norm(ta.value), G=[['CIEL'],['VHODN'],['NEVYHNUT','MIERNEJS'],['PRIMERAN','PREVAZ']];
+      const used=G.filter(g=>g.some(w=>tx.includes(w))).length;
+      if(ta.value.trim().split(/[.!?]+/).filter(x=>x.trim().length>8).length<2 || used<2){ ta.focus(); hintW.textContent='Napíš aspoň dve vety a výslovne zdôvodni aspoň dva kroky testu (napríklad cieľ a nevyhnutnosť alebo primeranosť). Sudca nikdy nerozhoduje bez odôvodnenia.'; hintW.className='fb bad'; ta.classList.remove('shake'); void ta.offsetWidth; ta.classList.add('shake'); beep(false); return; }
+      r.querySelectorAll('button').forEach(b=>b.disabled=true); ta.readOnly=true;
+      const same=c.ans.filter((a,i)=>a===mine[i]).length;
+      hintW.textContent=''; hintW.className='fb';
+      const msg = c.open
+        ? (v===c.v?'Zhoda so vzorovým rozhodnutím.':'Odlišnosť od vzorového rozhodnutia.')+' V tomto prípade sú obhájiteľné oba závery, rozhoduje kvalita argumentácie.'
+        : (v===c.v?'Zhoda so vzorovým rozhodnutím.':'Odlišnosť od vzorového rozhodnutia. Porovnaj svoje argumenty so vzorovými.');
+      steps.append(el('div',{class:'fb '+(c.open||v===c.v?'ok':'bad'),role:'status'},msg+` Zhoda v krokoch testu: ${same} zo 4. V zdôvodnení si pomenoval(a) ${used} zo 4 krokov.`),
+        why('<b>Vzorové zdôvodnenie:</b> '+c.m),
+        el('details',{class:'hint'},el('summary',{},'Na diskusiu'),el('p',{},'Porovnaj svoje zdôvodnenie so spolužiakom. V čom sa líšite? Ktorý argument je silnejší a prečo? Pri ťažkých prípadoch sa nezhodnú ani skutoční sudcovia, preto existujú aj odlišné stanoviská.')));
+      if(v===c.v||c.open) burstAt(r,20); else beep(false);
+      done();
+    }},t)));
+  };
+  step(0);
+}};
+
+// ===== STAV A UKLADANIE =====
+const KEY='sloboda-1711-v1';
+let S={lvl:'obcan', sound:true, prog:{}, name:'', lost:{}};
+try{ const d=JSON.parse(localStorage.getItem(KEY)||'null'); if(d) S={...S,...d}; }catch(e){}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+const P = (ch) => { S.prog[S.lvl]=S.prog[S.lvl]||{}; return S.prog[S.lvl][ch]=S.prog[S.lvl][ch]||{t:[],q:false}; };
+const chDone = (i) => { const p=(S.prog[S.lvl]||{})[i]; return p && p.q && CH[i].tasks[S.lvl].every(t=>p.t.includes(t)); };
+const avatar = (l) => ART[LV[l].av]();
+
+function view(){ if(KF){ KF.stop(); KF=null; } clearTimeout(ROT); const m=$('#main'); m.classList.remove('enter'); void m.offsetWidth; m.classList.add('enter'); m.replaceChildren(); scrollTo(0,0); return m; }
+function setRegime(on){
+  document.documentElement.classList.toggle('regime', on); hud(on);
+  const lg=$('#lgName'); if(lg) lg.textContent = on ? 'OBČAN Č. 17-'+String(rnd(1000,9999)) : 'SLOBODA';
+}
+
+// ===== HLAVIČKA, SLOVNÍK =====
+function header(){
+  const h=$('header.top .in'); h.replaceChildren(
+    el('button',{class:'logo',onclick:home,'aria-label':'Domov'}, el('span',{html:LOGO}), el('span',{}, el('b',{id:'lgName'},'SLOBODA'), el('br'), el('small',{},el('span',{class:'live'}),'EXPERIMENT 17/11'))),
+    el('span',{class:'sp'}),
+    el('button',{class:'ibtn','aria-label':'Slovník pojmov',html:ICON.book,onclick:()=>openSheet()}),
+    el('button',{class:'ibtn','aria-label':'Zvuk',id:'snd',html:S.sound?ICON.on:ICON.off,onclick:()=>{S.sound=!S.sound;save();$('#snd').innerHTML=S.sound?ICON.on:ICON.off;if(S.sound)beep(true);}}));
+}
+let lastFocus=null;
+function openSheet(term){
+  const sh=$('#sheet'); if(!sh.classList.contains('on')) lastFocus=document.activeElement;
+  const close=el('button',{class:'ibtn x','aria-label':'Zavrieť',onclick:closeSheet},'✕');
+  if(term && GLOSS[term]){
+    sh.replaceChildren(close, el('div',{class:'eyebrow'},'SLOVNÍK'), el('h2',{},term[0].toUpperCase()+term.slice(1)), el('p',{style:'font-size:18px'},GLOSS[term]),
+      el('button',{class:'btn ghost sm',onclick:()=>openSheet()},'Celý slovník'));
+  } else {
+    const keys=Object.keys(GLOSS).sort((a,b)=>a.localeCompare(b,'sk'));
+    sh.replaceChildren(close, el('div',{class:'eyebrow'},'SLOVNÍK'), el('h2',{},`${keys.length} pojmov o slobode`), el('dl',{},...keys.flatMap(k=>[el('dt',{},k[0].toUpperCase()+k.slice(1)),el('dd',{},GLOSS[k])])));
+  }
+  sh.classList.add('on'); $('#veil').classList.add('on'); sh.scrollTop=0; close.focus();
+}
+function closeSheet(){ const sh=$('#sheet'); if(!sh.classList.contains('on')) return; sh.classList.remove('on'); $('#veil').classList.remove('on'); if(lastFocus&&lastFocus.focus) lastFocus.focus(); }
+document.addEventListener('keydown',e=>{ const sh=$('#sheet'); if(e.key!=='Tab'||!sh.classList.contains('on')) return; const f=[...sh.querySelectorAll('button')]; if(!f.length) return; if(e.shiftKey&&document.activeElement===f[0]){e.preventDefault();f[f.length-1].focus();} else if(!e.shiftKey&&document.activeElement===f[f.length-1]){e.preventDefault();f[0].focus();} });
+document.addEventListener('click',e=>{ const t=e.target.closest('.term'); if(t){ e.preventDefault(); openSheet(t.dataset.t); } });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSheet(); });
+
+// ===== DOMOV =====
+function home(){
+  setRegime(false); try{speechSynthesis.cancel();}catch(e){}
+  const m=view();
+  document.body.className=S.lvl;
+  const done=CH.filter((c,i)=>chDone(i)).length;
+  const cv=el('canvas',{'aria-hidden':'true'}), rot=el('div',{class:'rot'});
+  m.append(el('section',{class:'hero'}, cv, el('div',{class:'shade'}),
+    el('div',{class:'txt'},
+      el('div',{class:'eyebrow'},el('span',{class:'live'}),'17. november · Deň boja za slobodu a demokraciu'),
+      el('h1',{class:'mega'},el('span',{class:'glitch','data-t':'SLOBODA'},'SLOBODA')),
+      rot,
+      el('p',{class:'lead'},'Interaktívny experiment o tom, čo je sloboda a demokracia, aké je žiť bez nich a ako sa dajú stratiť aj dnes. Potichu, bez tankov.'),
+      el('div',{class:'row',style:'margin-top:18px'},
+        el('button',{class:'btn',onclick:()=>openIntro(firstOpen())},'▶ '+(done?'Pokračovať':'Spustiť')),
+        el('button',{class:'btn ghost',onclick:()=>$('#lvls').scrollIntoView({behavior:'smooth'})},'Vybrať úroveň')),
+      el('div',{class:'chips'}, ...['5 spisov','1 experiment','3 úrovne','Človek a spoločnosť · ŠVP 2023'].map(c=>el('span',{class:'chip'},c))))));
+  const words=['SLOBODA','DEMOKRACIA','HLAS','VOĽBY','PRAVDA','ÚSTAVA','NÁZOR','17/11','NENÁSILIE','KĽÚČE'];
+  m.append(el('div',{class:'marquee','aria-hidden':'true'},el('div',{},...[...words,...words].map(w=>el('span',{},w+' ✦')))));
+  m.append(el('section',{class:'sec',id:'lvls'}, el('div',{class:'sec-h','data-r':''},el('span',{class:'n'},'01'),el('h2',{},'Vyber si úroveň')),
+    el('div',{class:'levels'}, ...Object.entries(LV).map(([k,v])=>el('button',{class:'lvl'+(S.lvl===k?' on':''),'data-r':'',onclick:()=>{S.lvl=k;save();home();setTimeout(()=>$('#lvls').scrollIntoView(),30);}},
+      el('span',{class:'av',html:avatar(k)}), el('span',{}, el('b',{},v.n), el('small',{},v.who), el('small',{style:'margin-top:4px;color:var(--ink2)'},v.g+'. '+v.gd)))))));
+  const files=el('div',{class:'files'});
+  CH.forEach((c,i)=>files.append(el('button',{class:'file'+(c.special?' special':''),'data-r':'',onclick:()=>openIntro(i)},
+    c.special?el('span',{class:'tag'},el('span',{class:'live'}),'EXPERIMENT'):null,
+    el('div',{class:'no'},c.no), el('b',{},c.name), el('small',{},c.sub),
+    chDone(i)?el('span',{class:'stamp-done'},'UZAVRETÉ'):null)));
+  const allDone=done===CH.length;
+  files.append(el('button',{class:'file','data-r':'',style:'border-style:dashed',onclick:exam},
+    el('div',{class:'no'},'★'), el('b',{},'Skúška a manifest'), el('small',{},allDone?'Všetky spisy sú uzavreté. Si pripravený(á).':'Môžeš ju skúsiť kedykoľvek, ale najlepšie po všetkých spisoch.')));
+  m.append(el('section',{class:'sec'}, el('div',{class:'sec-h','data-r':''},el('span',{class:'n'},'02'),el('h2',{},'Spisy')),
+    el('div',{class:'prog'},el('i',{style:`width:${done/CH.length*100}%`})),
+    el('div',{class:'mono',style:'font-size:12px;color:var(--muted);margin-bottom:14px'},`${done} / ${CH.length} uzavretých · úroveň ${LV[S.lvl].n.toUpperCase()}`),
+    files));
+  m.append(el('section',{class:'sec'}, el('div',{class:'sec-h','data-r':''},el('span',{class:'n'},'03'),el('h2',{},'Pre učiteľa')),
+    el('div',{class:'teacher','data-r':''},
+      el('p',{html:'Odporúčaný postup na 1 – 2 vyučovacie hodiny: <b>Spis 01 a 02</b> (20 min) → <b>Spis 03 Experiment</b> nechajte žiakov prejsť samostatne a <b>bez vysvetľovania vopred</b> (15 min) → spoločný rozhovor: „Ktorá strata by ťa bolela najviac?“ → <b>Spis 04 a 05</b> → manifest. Pojmy s bodkovaným podčiarknutím vysvetľuje [[demokracia|slovník]]. Skúšku možno spustiť aj bez časového limitu.'}),
+      el('p',{style:'color:var(--muted);font-size:14px'},'Bez registrácie. Meno, odpovede a postup sa neodosielajú na žiadny server, ukladajú sa iba v tomto prehliadači. (Písma sa načítavajú zo služby Google Fonts.) Ak sa pri počítači striedajú žiaci, po skončení ťuknite na „Vymazať postup a osobné údaje“.'),
+      el('button',{class:'btn ghost sm',onclick:e=>{ if(confirmReset(e.currentTarget)){ S.prog={}; S.lost={}; S.orig=''; S.refl=''; S.name=''; S.man=''; try{ localStorage.removeItem(KEY); }catch(e){} save(); home(); } }},'Vymazať postup a osobné údaje'))));
+  m.append(el('footer',{},'Autor: Miroslav Sopko · Zavretá škola · bezplatná vzdelávacia aplikácia'));
+  requestAnimationFrame(()=>{ keyField(cv); reveals(m); tilt(m); rotator(rot,['nie je samozrejmosť.','sa dá stratiť.','má hranice.','nepadá z neba.','je aj tvoja vec.']); });
+}
+const firstOpen=()=>{ const k=CH.findIndex((c,i)=>!chDone(i)); return k<0?0:k; };
+let resetArm=0; function confirmReset(b){ const now=Date.now(); if(now-resetArm<4000) return true; resetArm=now; if(b){ const t=b.textContent; b.textContent='Naozaj? Ťukni znova'; setTimeout(()=>{ if(b.isConnected) b.textContent=t; },4000); } return false; }
+
+// ===== INTRO =====
+let IT=[]; const clearIT=()=>{ IT.forEach(clearTimeout); IT=[]; };
+function openIntro(i){
+  clearIT(); const c=CH[i], o=$('#intro'); o.classList.remove('hidden');
+  o.replaceChildren(el('button',{class:'skip',onclick:()=>{clearIT(); o.querySelectorAll('.ln,p,.btn').forEach(x=>x.classList.add('on')); o.querySelector('.btn').focus();}},'PRESKOČIŤ ›'), el('div',{class:'big'},c.no), ...c.intro.slice(0,3).map(t=>el('div',{class:'ln'},t)), el('p',{},c.intro[3]), el('button',{class:'btn',onclick:()=>{clearIT(); o.classList.add('hidden'); chapter(i);}}, c.special?'Vstúpiť do experimentu':'Otvoriť spis '+c.no));
+  const L=[...o.querySelectorAll('.ln')];
+  L.forEach((l,k)=>IT.push(setTimeout(()=>{l.classList.add('on'); tone(110+k*55,.35,'sawtooth',.05); tone(220+k*110,.25,'sine',.06);}, 300+k*650)));
+  IT.push(setTimeout(()=>o.querySelector('p').classList.add('on'), 300+L.length*650));
+  IT.push(setTimeout(()=>o.querySelector('.btn').classList.add('on'), 600+L.length*650));
+  o.querySelector('.btn').focus();
+}
+
+// ===== KAPITOLA =====
+function ring(p){ const r=22,c=2*Math.PI*r; return `<svg class="ring" viewBox="0 0 52 52"><circle cx="26" cy="26" r="${r}" fill="none" stroke="currentColor" stroke-opacity=".15" stroke-width="6"/><circle cx="26" cy="26" r="${r}" fill="none" stroke="var(--acc)" stroke-width="6" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-p)}" transform="rotate(-90 26 26)"/><text x="26" y="31" text-anchor="middle" font-family="JetBrains Mono" font-size="13" font-weight="700" fill="currentColor">${Math.round(p*100)}</text></svg>`; }
+
+function chapter(i, cur){
+  const jump = cur!=null;
+  const c=CH[i], p=P(i), ids=c.tasks[S.lvl], m=$('#main');
+  if(cur==null){ cur=ids.findIndex(t=>!p.t.includes(t)); if(cur<0) cur=ids.length; }
+  setRegime(!!c.special && cur<ids.length && ids[cur]!=='r_koniec');
+  document.querySelectorAll('#stampLayer .stamp').forEach(s=>s.remove());
+  view();
+  const total=ids.length+1, got=p.t.filter(t=>ids.includes(t)).length+(p.q?1:0);
+  m.append(el('div',{class:'ch-head'},
+    el('button',{class:'ibtn','aria-label':'Späť na spisy',html:ICON.back,onclick:home}),
+    el('div',{style:'flex:1;min-width:0'}, el('div',{class:'eyebrow'},'SPIS '+c.no), el('h2',{style:'margin:0'},c.name)),
+    el('span',{html:ring(got/total)})));
+  const story=c.story[S.lvl];
+  const msg=el('div'), bub=el('div',{class:'bubble'}, el('div',{class:'who'},LV[S.lvl].g, el('i',{},'práve teraz')), msg);
+  m.append(el('div',{class:'guide'}, el('span',{class:'av',html:avatar(S.lvl)}), bub));
+  const showMsg=()=>{ msg.replaceChildren(el('p',{html:story}), el('button',{class:'btn ghost sm',onclick:()=>say(story)},el('span',{html:ICON.speak,style:'width:18px;display:inline-flex'}),'Prečítať')); msg.style.animation='enter .4s'; };
+  if(jump||RM) showMsg(); else { msg.append(el('span',{class:'dots'},el('i'),el('i'),el('i'))); setTimeout(()=>{ showMsg(); tone(880,.08,'sine',.06); tone(1320,.1,'sine',.05,.08); }, 1100); }
+  const pills=el('div',{class:'pills',role:'tablist'});
+  ids.forEach((t,k)=>{ const locked=c.special && k>0 && !p.t.includes(ids[k-1]);
+    pills.append(el('button',{class:'pill'+(k===cur?' on':'')+(p.t.includes(t)?' done':''),disabled:locked,style:locked?'opacity:.4':'',onclick:()=>chapter(i,k)}, T[t].n)); });
+  const qLocked=c.special && !ids.every(t=>p.t.includes(t));
+  pills.append(el('button',{class:'pill'+(cur===ids.length?' on':'')+(p.q?' done':''),disabled:qLocked,style:qLocked?'opacity:.4':'',onclick:()=>chapter(i,ids.length)},'Kvíz'));
+  m.append(pills);
+  if(c.special && cur<ids.length && ids[cur]!=='r_koniec') m.append(el('div',{class:'row',style:'justify-content:flex-end;margin:-2px 0 10px'},
+    el('button',{class:'btn ghost sm',onclick:home,'aria-label':'Ukončiť experiment a vrátiť sa na úvod'},'✕ Ukončiť experiment')));
+  const card=el('div',{class:'task'}); m.append(card);
+  setTimeout(()=>{ const on=pills.querySelector('.on'); if(on) pills.scrollLeft=on.offsetLeft-pills.clientWidth/2+on.clientWidth/2; if(jump) window.scrollTo({top:pills.getBoundingClientRect().top+scrollY-80}); },50);
+
+  const nextBtn=(label,fn)=>el('div',{class:'row',style:'margin-top:16px'},el('button',{class:'btn',onclick:fn},label));
+  if(cur<ids.length){
+    const id=ids[cur];
+    const top=el('div',{class:'row',style:'justify-content:space-between;margin-bottom:6px'},el('h3',{style:'margin:0'},T[id].n));
+    if(!c.special) top.append(el('button',{class:'btn ghost sm',onclick:()=>chapter(i,cur)},'↻ Nové zadanie'));
+    card.append(top);
+    const body=el('div'); card.append(body);
+    T[id].run(body, ()=>{
+      if(!p.t.includes(id)){ p.t.push(id); save(); }
+      card.append(nextBtn(cur+1<ids.length?'Pokračovať →':'Na záverečný kvíz →', ()=>chapter(i,cur+1)));
+      if(c.special && id==='r_koniec') pills.querySelectorAll('.pill').forEach(x=>{x.disabled=false;x.style.opacity=1;});
+    }, S.lvl);
+  } else quiz(i, card);
+}
+
+function quiz(i, card){
+  const c=CH[i], p=P(i); let k=0, score=0;
+  card.append(el('h3',{},'Záverečný kvíz spisu '+c.no));
+  const area=el('div'); card.append(area);
+  const next=()=>{
+    area.replaceChildren();
+    if(k>=c.quiz.length){
+      p.q=true; save();
+      area.append(el('p',{style:'font-size:20px;font-weight:700'},`${score} z ${c.quiz.length} správne na prvý pokus.`));
+      if(chDone(i)){ stamp('SPIS '+c.no+'<br>UZAVRETÝ',{x:30,y:40,color:'#3ef28b',keep:1800}); jingle(10); keyRain(70); }
+      area.append(el('div',{class:'fact'},el('div',{class:'k'},'STOPA K ĎALŠIEMU SPISU'),el('p',{style:'font-size:19px;font-weight:700;margin:.3em 0'},c.clue)));
+      area.append(el('div',{class:'row',style:'margin-top:14px'},
+        i+1<CH.length?el('button',{class:'btn',onclick:()=>openIntro(i+1)},'Otvoriť spis '+CH[i+1].no+' →'):el('button',{class:'btn',onclick:exam},'Na skúšku a manifest →'),
+        el('button',{class:'btn ghost',onclick:home},'Späť na spisy')));
+      return;
+    }
+    const q=c.quiz[k];
+    area.append(el('div',{class:'mono',style:'font-size:13px;color:var(--muted)'},`Otázka ${k+1} / ${c.quiz.length}`));
+    mc(area,q.q,q.o.map((t,j)=>({t,ok:j===0})),(first)=>{ if(first) score++; k++; area.append(el('button',{class:'btn sm',style:'margin-top:10px',onclick:next},k<c.quiz.length?'Ďalšia otázka →':'Vyhodnotiť'));});
+  }; next();
+}
+
+// ===== SKÚŠKA A MANIFEST =====
+function exam(){
+  setRegime(false);
+  const m=view();
+  const pool=[...CH.flatMap(c=>c.quiz),...EXTRA];
+  const qs=shuffle(pool).slice(0,10); let k=0, by={}, tmr=null;
+  m.append(el('div',{class:'ch-head'},el('button',{class:'ibtn','aria-label':'Späť',html:ICON.back,onclick:()=>{clearInterval(tmr);home();}}),
+    el('div',{}, el('div',{class:'eyebrow'},'ZÁVEREČNÁ SKÚŠKA'), el('h2',{style:'margin:0'},'10 otázok'))));
+  const card=el('div',{class:'task'}); m.append(card);
+  let timed=true;
+  const tg=el('label',{class:'row',style:'margin:10px 0 16px;cursor:pointer'}, el('input',{type:'checkbox',style:'width:24px;height:24px;accent-color:var(--acc)',onchange:e=>{timed=!e.target.checked;}}), el('span',{},'Bez časového limitu (pokojný režim)'));
+  card.append(el('p',{},'Je to sebakontrola, nie známka. Každá otázka má jeden pokus a 25 sekúnd. Ak ti časový limit nevyhovuje, môžeš ho vypnúť. Výsledky uvidíš podľa oblastí.'), tg,
+    el('button',{class:'btn',onclick:()=>next()},'Spustiť skúšku'));
+  function next(){
+    clearInterval(tmr); card.replaceChildren();
+    if(k>=qs.length) return results();
+    const q=qs[k]; by[q.a]=by[q.a]||[0,0]; by[q.a][1]++;
+    const bar=el('i'); card.append(el('div',{class:'mono',style:'font-size:13px;color:var(--muted)'},`Otázka ${k+1} / ${qs.length} · ${q.a}`), el('div',{class:'timer'},bar));
+    const area=el('div'); card.append(area); let answered=false;
+    mc(area,q.q,q.o.map((t,j)=>({t,ok:j===0})),(ok)=>{ answered=true; clearInterval(tmr); if(ok) by[q.a][0]++; k++; area.append(el('button',{class:'btn sm',style:'margin-top:10px',onclick:next},k<qs.length?'Ďalej →':'Výsledky'));},{retry:false});
+    if(!timed){ bar.parentElement.remove(); return; }
+    const t0=Date.now(); tmr=setInterval(()=>{ const r=1-(Date.now()-t0)/25000; bar.style.width=Math.max(0,r*100)+'%';
+      if(r<=0 && !answered){ clearInterval(tmr); answered=true; area.querySelectorAll('.opt').forEach(b=>b.disabled=true); area.append(el('div',{class:'fb bad'},'⏱ Čas vypršal.')); k++; area.append(el('button',{class:'btn sm',style:'margin-top:10px',onclick:next},k<qs.length?'Ďalej →':'Výsledky')); } },100);
+  }
+  function results(){
+    const tot=Object.values(by).reduce((a,b)=>a+b[0],0);
+    card.append(el('div',{class:'eyebrow'},'VÝSLEDOK'), el('h2',{},`${tot} z ${qs.length}`),
+      el('div',{class:'res'},...Object.entries(by).map(([a,v])=>el('div',{},el('span',{},a),el('b',{class:'mono'},`${v[0]} / ${v[1]}`)))));
+    card.append(el('p',{style:'color:var(--muted)'},tot>=7?'Výborne, vedomosti máš v malíčku.':tot>=4?'Základ máš. Oblasti s nižším skóre si môžeš zopakovať v spisoch.':'Skús si spisy prejsť ešte raz a potom skúšku zopakuj.'), el('button',{class:'btn ghost sm',onclick:exam},'↻ Skúsiť znova'));
+    manifest(card, tot);
+  }
+}
+function manifest(card, score){
+  const R=['Sloboda prejavu','Slobodné voľby','Sloboda pohybu','Právo na vzdelanie','Ochrana súkromia','Sloboda umenia','Nezávislé súdy','Slobodné médiá','Sloboda viery','Právo zhromažďovať sa'];
+  const sel=new Set();
+  const nm=el('input',{class:'txt',value:S.name||'',placeholder:'Tvoje meno'});
+  const ta=el('textarea',{class:'manif',placeholder:'Sloboda pre mňa znamená…'}); ta.value=S.man||'';
+  const rb=el('div',{class:'rights'},...R.map(r=>el('button',{onclick:e=>{ if(sel.has(r)){sel.delete(r);e.target.classList.remove('on');} else if(sel.size<3){sel.add(r);e.target.classList.add('on');} }},r)));
+  card.append(el('h3',{style:'margin-top:22px'},'Môj manifest slobody'),
+    S.refl?el('p',{style:'color:var(--muted)'},'V experimente si napísal(a): „'+S.refl+'“'):'',
+    el('label',{class:'mono',style:'font-size:13px'},'MENO'), nm,
+    el('label',{class:'mono',style:'font-size:13px;display:block;margin-top:10px'},'SLOBODA PRE MŇA ZNAMENÁ…'), ta,
+    el('label',{class:'mono',style:'font-size:13px;display:block;margin:10px 0 6px'},'TRI SLOBODY, KTORÉ BUDEM BRÁNIŤ'), rb,
+    el('div',{class:'row',style:'margin-top:14px'},el('button',{class:'btn',onclick:()=>{
+      S.name=nm.value.trim(); S.man=ta.value.trim(); save();
+      const chosen=[...sel]; const c=$('#cert'); c&&c.remove();
+      const cert=el('div',{class:'cert',id:'cert'},
+        el('div',{class:'eyebrow'},'MANIFEST SLOBODY · 17. NOVEMBER'),
+        el('div',{class:'keysrow'},'🔑🔑🔑'),
+        el('div',{class:'nm'},S.name||'Občan / občianka'),
+        el('div',{},'osobné vyhlásenie po experimente SLOBODA · úroveň ',el('b',{},LV[S.lvl].n)),
+        el('div',{class:'man'},'„'+(S.man||'Sloboda pre mňa znamená, že môžem povedať, čo si myslím, a nikto ma za to nezatvorí.')+'“'),
+        chosen.length?el('div',{},'Budem brániť: ',el('b',{},chosen.join(' · '))):null,
+        el('div',{style:'font-size:13px;margin-top:12px;border-top:1px solid #ccc;padding-top:8px'},`Spisy uzavreté: ${CH.filter((x,i)=>chDone(i)).length} z ${CH.length} · Vedomostná sebakontrola: ${score} z 10 bodov`+(score>=7?' ✓':'')),
+        el('div',{style:'font-size:11px;color:#666;margin-top:4px'},'Manifest je osobné vyhlásenie, nie vysvedčenie ani potvrdenie o úspešnej skúške.'),
+        el('div',{class:'mono',style:'font-size:12px;margin-top:10px'},new Date().toLocaleDateString('sk-SK')+' · Zavretá škola'));
+      card.append(cert, el('div',{class:'row',style:'justify-content:center'},el('button',{class:'btn',onclick:()=>print()},'🖨 Vytlačiť manifest')));
+      jingle(14); keyRain(120); cert.scrollIntoView({behavior:'smooth',block:'center'});
+    }},'Vytvoriť manifest')));
+}
+
+// ===== ŠTART =====
+header(); home();
+$('#veil').addEventListener('click',closeSheet);
+</script>
+</body></html>
